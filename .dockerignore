@@ -1,0 +1,10 @@
+node_modules
+.env
+database/*.db
+database/.schema_version
+uploads/*
+.git
+.cursor
+docs
+*.md
+!README.md

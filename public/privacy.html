@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Политика конфиденциальности — МедКлиника на Гагарина</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="admin-page" style="padding-top:40px;">
+    <div class="container" style="max-width:800px;">
+      <a href="/" style="color:var(--text-muted);font-size:13px;">← На главную</a>
+      <h1 style="margin:16px 0 24px;font-size:28px;">Политика обработки персональных данных</h1>
+      <div id="privacyContent" style="font-size:15px;line-height:1.7;color:var(--text-muted);">
+        Загрузка...
+      </div>
+    </div>
+  </div>
+  <script>
+    fetch('/api/config/privacy').then(r => r.json()).then(p => {
+      document.getElementById('privacyContent').innerHTML = `
+        <p><strong>Оператор:</strong> ${p.operatorName}${p.operatorInn ? `, ИНН ${p.operatorInn}` : ''}</p>
+        <p><strong>Адрес:</strong> ${p.operatorAddress || '—'}</p>
+        <p><strong>Контакт по вопросам ПДн:</strong> <a href="mailto:${p.dpoEmail}">${p.dpoEmail}</a></p>
+        <h2 style="font-size:18px;color:var(--text);margin:24px 0 12px;">1. Общие положения</h2>
+        <p>Настоящая политика определяет порядок обработки персональных данных пациентов в соответствии с Федеральным законом № 152-ФЗ «О персональных данных».</p>
+        <h2 style="font-size:18px;color:var(--text);margin:24px 0 12px;">2. Цели обработки</h2>
+        <ul>${p.purposes.map(x => `<li>${x}</li>`).join('')}</ul>
+        <h2 style="font-size:18px;color:var(--text);margin:24px 0 12px;">3. Правовые основания</h2>
+        <p>${p.legalBasis}</p>
+        <h2 style="font-size:18px;color:var(--text);margin:24px 0 12px;">4. Обрабатываемые данные</h2>
+        <p>ФИО, номер телефона, адрес электронной почты (при указании), комментарий к записи, IP-адрес и данные браузера при согласии на обработку.</p>
+        <h2 style="font-size:18px;color:var(--text);margin:24px 0 12px;">5. Срок хранения</h2>
+        <p>Данные хранятся не более ${p.retentionDays} дней с момента последнего обращения, если иное не предусмотрено законодательством РФ.</p>
+        <h2 style="font-size:18px;color:var(--text);margin:24px 0 12px;">6. Передача третьим лицам</h2>
+        <p>Данные могут передаваться в МИС МедЛок через платформу МедФлекс (при подключении клиники), а также провайдерам SMS/email-уведомлений и платёжному сервису ЮKassa — только в объёме, необходимом для оказания услуги.</p>
+        <h2 style="font-size:18px;color:var(--text);margin:24px 0 12px;">7. Права субъекта</h2>
+        <p>Вы вправе запросить доступ, исправление или удаление персональных данных, направив обращение на ${p.dpoEmail}.</p>
+        <p style="margin-top:32px;font-size:13px;">Версия согласия: ${p.consentVersion}</p>
+      `;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: medklinika-gagarin
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run init-db:pg
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SITE_URL
+        value: https://medklinika-gagarin.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: medklinika-db
+          property: connectionString
+      - key: PD_OPERATOR_NAME
+        value: МедКлиника на Гагарина
+      - key: PD_DPO_EMAIL
+        value: privacy@medklinika-gagarin.ru
+      - key: ONEC_ORG_NAME
+        value: МедКлиника на Гагарина
+
+databases:
+  - name: medklinika-db
+    region: frankfurt
+    plan: free
+    databaseName: medklinika
+    user: medklinika

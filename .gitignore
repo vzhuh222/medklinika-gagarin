@@ -1,0 +1,6 @@
+uploads/
+node_modules/
+.env
+database/medklinika.db
+database/medklinika.db-*
+database/.schema_version

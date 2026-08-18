@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Панель сотрудника — МедКлиника на Гагарина</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/assets/logo.png" type="image/png">
+</head>
+<body>
+  <div class="admin-page">
+    <div class="admin-header">
+      <div class="container admin-header__inner">
+        <div>
+          <a href="/" style="color:var(--text-muted);font-size:13px;">← На сайт</a>
+          <h1 class="admin-header__title" id="panelTitle">Панель управления</h1>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <span id="adminName" style="font-size:14px;color:var(--text-muted);"></span>
+          <button class="btn btn--outline btn--sm" id="logoutBtn">Выйти</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab admin-only active" data-tab="staff">Персонал</button>
+        <button class="admin-tab admin-only" data-tab="accounts">Учётные записи</button>
+        <button class="admin-tab active doctor-only" data-tab="calendar" style="display:none;">Календарь</button>
+        <button class="admin-tab doctor-only" data-tab="appointments-list" style="display:none;">Список записей</button>
+        <button class="admin-tab admin-only" data-tab="appointments">Записи</button>
+      </div>
+
+      <!-- Staff panel (admin only) -->
+      <div class="admin-panel admin-only active" id="panel-staff">
+        <div class="admin-form">
+          <div class="admin-form__title" id="staffFormTitle">Добавить сотрудника</div>
+          <form id="staffForm">
+            <input type="hidden" id="staffId">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Фамилия *</label>
+                <input type="text" id="sLastName" required>
+              </div>
+              <div class="form-group">
+                <label>Имя *</label>
+                <input type="text" id="sFirstName" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Отчество</label>
+                <input type="text" id="sMiddleName">
+              </div>
+              <div class="form-group">
+                <label>Специальность *</label>
+                <input type="text" id="sSpecialty" required placeholder="Терапевт">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Должность</label>
+                <select id="sPosition">
+                  <option value="врач">Врач</option>
+                  <option value="медсестра">Медсестра</option>
+                  <option value="администратор">Администратор</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Категория</label>
+                <input type="text" id="sQualification" placeholder="высшая категория">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Стаж (лет)</label>
+                <input type="number" id="sExperience" min="0" value="0">
+              </div>
+              <div class="form-group">
+                <label>Расписание</label>
+                <input type="text" id="sSchedule" placeholder="Пн, Ср: 09:00–17:00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Образование</label>
+              <input type="text" id="sEducation">
+            </div>
+            <div class="form-group">
+              <label>Описание</label>
+              <textarea id="sDescription"></textarea>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--primary">Сохранить</button>
+              <button type="button" class="btn btn--outline" id="staffCancel" style="display:none;">Отмена</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ФИО</th>
+                <th>Специальность</th>
+                <th>Должность</th>
+                <th>Стаж</th>
+                <th>Расписание</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="staffTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Accounts panel (admin only) -->
+      <div class="admin-panel admin-only" id="panel-accounts">
+        <div class="admin-form">
+          <div class="admin-form__title">Создать учётную запись</div>
+          <form id="accountForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Фамилия *</label>
+                <input type="text" id="aLastName" required>
+              </div>
+              <div class="form-group">
+                <label>Имя *</label>
+                <input type="text" id="aFirstName" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="aEmail" required>
+              </div>
+              <div class="form-group">
+                <label>Пароль *</label>
+                <input type="password" id="aPassword" required minlength="6">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Роль *</label>
+                <select id="aRole" required>
+                  <option value="doctor">Врач</option>
+                  <option value="admin">Администратор</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Привязка к сотруднику</label>
+                <select id="aStaffId">
+                  <option value="">— не привязан —</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn--primary">Создать</button>
+          </form>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ФИО</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Сотрудник</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody id="accountsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Doctor calendar -->
+      <div class="admin-panel doctor-only active" id="panel-calendar" style="display:none;">
+        <div class="calendar-toolbar">
+          <div class="calendar-toolbar__nav">
+            <button type="button" class="btn btn--outline btn--sm" id="calPrev">←</button>
+            <strong id="calendarLabel"></strong>
+            <button type="button" class="btn btn--outline btn--sm" id="calNext">→</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+
+        <h3 id="daySlotsTitle" style="font-size:16px;margin-bottom:12px;"></h3>
+        <div class="day-slots" id="daySlots"></div>
+
+        <div class="admin-form" style="margin-top:24px;">
+          <div class="admin-form__title">Создать окна приёма на день</div>
+          <form id="generateSlotsForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Дата</label>
+                <input type="date" id="genDate" required>
+              </div>
+              <div class="form-group">
+                <label>Интервал (мин)</label>
+                <select id="genInterval">
+                  <option value="30" selected>30</option>
+                  <option value="20">20</option>
+                  <option value="45">45</option>
+                  <option value="60">60</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Начало</label>
+                <input type="time" id="genStart" value="09:00" required>
+              </div>
+              <div class="form-group">
+                <label>Конец</label>
+                <input type="time" id="genEnd" value="17:00" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--sm">Создать окна</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Doctor appointments list -->
+      <div class="admin-panel doctor-only" id="panel-appointments-list" style="display:none;">
+        <p style="margin-bottom:16px;color:var(--text-muted);font-size:14px;">Нажмите на строку, чтобы открыть карточку пациента</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Время</th>
+                <th>Пациент</th>
+                <th>Телефон</th>
+                <th>Услуга</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody id="doctorAppointmentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-panel admin-only" id="panel-appointments">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Время</th>
+                <th>Пациент</th>
+                <th>Телефон</th>
+                <th>Врач</th>
+                <th>Услуга</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody id="appointmentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Patient card modal -->
+  <div class="modal-overlay" id="patientModal">
+    <div class="modal modal--wide">
+      <button class="modal__close" id="closePatientModal">&times;</button>
+      <h2 class="modal__title">Карточка пациента</h2>
+      <div id="patientModalBody"></div>
+    </div>
+  </div>
+
+  <script src="/js/doctor.js"></script>
+  <script>
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const isAdmin = user?.role === 'admin';
+    const isDoctor = user?.role === 'doctor';
+
+    if (!user || (!isAdmin && !isDoctor)) {
+      window.location.href = '/login.html';
+    } else {
+      const roleLabel = isAdmin ? 'Администратор' : user.specialty || 'Врач';
+      document.getElementById('adminName').textContent = `${user.last_name} ${user.first_name} · ${roleLabel}`;
+    }
+
+    if (isDoctor) {
+      document.getElementById('panelTitle').textContent = 'Кабинет врача';
+      document.querySelectorAll('.admin-only').forEach(el => { el.style.display = 'none'; });
+      document.querySelectorAll('.doctor-only').forEach(el => {
+        if (el.classList.contains('admin-panel')) el.style.display = 'block';
+        else el.style.display = '';
+      });
+      document.getElementById('panel-calendar').classList.add('active');
+      initDoctorPanel(user);
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    });
+
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        if (tab.style.display === 'none') return;
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`panel-${tab.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    async function fetchJSON(url, options) {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Ошибка');
+      return data;
+    }
+
+    const statusMap = { pending: 'Ожидает', confirmed: 'Подтверждена', cancelled: 'Отменена', completed: 'Завершена' };
+
+    async function loadStaff() {
+      if (!isAdmin) return;
+      const staff = await fetchJSON('/api/staff?active=false');
+      document.getElementById('staffTable').innerHTML = staff.map(s => `
+        <tr>
+          <td>${s.last_name} ${s.first_name} ${s.middle_name || ''}</td>
+          <td>${s.specialty}</td>
+          <td>${s.position}</td>
+          <td>${s.experience_years || '—'}</td>
+          <td>${s.schedule || '—'}</td>
+          <td><span class="badge ${s.is_active ? 'badge--green' : 'badge--red'}">${s.is_active ? 'Активен' : 'Неактивен'}</span></td>
+          <td>
+            <button class="btn btn--outline btn--sm" onclick="editStaff(${s.id})">Изм.</button>
+            ${s.is_active ? `<button class="btn btn--outline btn--sm" onclick="deactivateStaff(${s.id})">Деакт.</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+
+      const select = document.getElementById('aStaffId');
+      select.innerHTML = '<option value="">— не привязан —</option>' +
+        staff.filter(s => s.is_active && s.position === 'врач').map(s =>
+          `<option value="${s.id}">${s.last_name} ${s.first_name} — ${s.specialty}</option>`
+        ).join('');
+    }
+
+    window.editStaff = async (id) => {
+      const s = await fetchJSON(`/api/staff/${id}`);
+      document.getElementById('staffId').value = s.id;
+      document.getElementById('sLastName').value = s.last_name;
+      document.getElementById('sFirstName').value = s.first_name;
+      document.getElementById('sMiddleName').value = s.middle_name || '';
+      document.getElementById('sSpecialty').value = s.specialty;
+      document.getElementById('sPosition').value = s.position;
+      document.getElementById('sQualification').value = s.qualification || '';
+      document.getElementById('sExperience').value = s.experience_years || 0;
+      document.getElementById('sSchedule').value = s.schedule || '';
+      document.getElementById('sEducation').value = s.education || '';
+      document.getElementById('sDescription').value = s.description || '';
+      document.getElementById('staffFormTitle').textContent = 'Редактировать сотрудника';
+      document.getElementById('staffCancel').style.display = 'inline-flex';
+    };
+
+    window.deactivateStaff = async (id) => {
+      if (!confirm('Деактивировать сотрудника?')) return;
+      await fetchJSON(`/api/staff/${id}`, { method: 'DELETE' });
+      loadStaff();
+    };
+
+    document.getElementById('staffCancel')?.addEventListener('click', () => {
+      document.getElementById('staffForm').reset();
+      document.getElementById('staffId').value = '';
+      document.getElementById('staffFormTitle').textContent = 'Добавить сотрудника';
+      document.getElementById('staffCancel').style.display = 'none';
+    });
+
+    document.getElementById('staffForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('staffId').value;
+      const body = {
+        first_name: document.getElementById('sFirstName').value,
+        last_name: document.getElementById('sLastName').value,
+        middle_name: document.getElementById('sMiddleName').value,
+        specialty: document.getElementById('sSpecialty').value,
+        position: document.getElementById('sPosition').value,
+        qualification: document.getElementById('sQualification').value,
+        experience_years: parseInt(document.getElementById('sExperience').value) || 0,
+        schedule: document.getElementById('sSchedule').value,
+        education: document.getElementById('sEducation').value,
+        description: document.getElementById('sDescription').value,
+      };
+
+      if (id) {
+        await fetchJSON(`/api/staff/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      } else {
+        await fetchJSON('/api/staff', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      }
+
+      document.getElementById('staffForm').reset();
+      document.getElementById('staffId').value = '';
+      document.getElementById('staffFormTitle').textContent = 'Добавить сотрудника';
+      document.getElementById('staffCancel').style.display = 'none';
+      loadStaff();
+    });
+
+    async function loadAccounts() {
+      if (!isAdmin) return;
+      const accounts = await fetchJSON('/api/auth/accounts');
+      const roleLabels = { admin: 'Администратор', doctor: 'Врач' };
+      document.getElementById('accountsTable').innerHTML = accounts.map(a => `
+        <tr>
+          <td>${a.last_name} ${a.first_name}</td>
+          <td>${a.email}</td>
+          <td><span class="badge badge--blue">${roleLabels[a.role] || a.role}</span></td>
+          <td>${a.staff_name || '—'}</td>
+          <td><span class="badge ${a.is_active ? 'badge--green' : 'badge--red'}">${a.is_active ? 'Активна' : 'Отключена'}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('accountForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await fetchJSON('/api/auth/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: document.getElementById('aFirstName').value,
+          last_name: document.getElementById('aLastName').value,
+          email: document.getElementById('aEmail').value,
+          password: document.getElementById('aPassword').value,
+          role: document.getElementById('aRole').value,
+          staff_id: document.getElementById('aStaffId').value || null,
+        }),
+      });
+      e.target.reset();
+      loadAccounts();
+    });
+
+    async function loadAppointments() {
+      if (!isAdmin) return;
+      const appts = await fetchJSON('/api/appointments');
+
+      document.getElementById('appointmentsTable').innerHTML = appts.length ? appts.map(a => `
+        <tr class="clickable-row" onclick="openPatientCard(${a.id}, ${a.staff_id || 0})">
+          <td>${a.appointment_date}</td>
+          <td>${a.appointment_time.slice(0, 5)}</td>
+          <td>${a.patient_name}</td>
+          <td>${a.patient_phone}</td>
+          <td>${a.doctor_name || '—'}</td>
+          <td>${a.service_name || '—'}</td>
+          <td><span class="badge badge--blue">${statusMap[a.status] || a.status}</span></td>
+        </tr>
+      `).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Записей пока нет</td></tr>';
+    }
+
+    if (isAdmin) {
+      loadStaff();
+      loadAccounts();
+      loadAppointments();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Оплата — МедКлиника на Гагарина</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card" style="text-align:center;">
+      <div class="success-icon">✓</div>
+      <h1 class="auth-card__title">Спасибо!</h1>
+      <p id="paymentMessage" class="auth-card__subtitle">Проверяем статус оплаты...</p>
+      <a href="/" class="btn btn--primary" style="width:100%;margin-top:16px;">На главную</a>
+    </div>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get('appointment_id');
+    if (id) {
+      fetch('/api/payments/status/' + id).then(r => r.json()).then(p => {
+        const msg = document.getElementById('paymentMessage');
+        if (p.status === 'succeeded') msg.textContent = 'Оплата прошла успешно. Запись подтверждена.';
+        else if (p.status === 'pending' || p.status === 'waiting_for_capture') msg.textContent = 'Оплата обрабатывается. Мы отправим подтверждение на ваш телефон или email.';
+        else msg.textContent = 'Запись оформлена. Если оплата не завершена, вы можете оплатить в клинике.';
+      });
+    } else {
+      document.getElementById('paymentMessage').textContent = 'Запись оформлена.';
+    }
+  </script>
+</body>
+</html>

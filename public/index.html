@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>МедКлиника на Гагарина — Медицинский центр</title>
+  <meta name="description" content="Многопрофильный медицинский центр на ул. Гагарина. Консультации врачей, диагностика, анализы. Запись на приём онлайн.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/assets/logo.png" type="image/png">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="/" class="header__logo">
+        <img src="/assets/logo.png" alt="МедКлиника на Гагарина">
+      </a>
+      <nav>
+        <ul class="header__nav" id="nav">
+          <li><a href="#services">Услуги</a></li>
+          <li><a href="#doctors">Врачи</a></li>
+          <li><a href="#about">О клинике</a></li>
+          <li><a href="#contacts">Контакты</a></li>
+        </ul>
+      </nav>
+      <div class="header__actions">
+        <a href="tel:+74951234567" class="header__phone" id="headerPhone">+7 (495) 123-45-67</a>
+        <a href="/login.html" class="header__staff-link">Сотрудникам</a>
+        <button class="btn btn--primary btn--sm" id="openAppointment">Записаться</button>
+        <button class="burger" id="burger" aria-label="Меню">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <span class="hero__badge">Медицинский центр</span>
+        <h1 class="hero__title" id="clinicName">МедКлиника на Гагарина</h1>
+        <p class="hero__subtitle" id="clinicDesc">
+          Многопрофильный медицинский центр с современным оборудованием.
+          Запишитесь к врачу онлайн — быстро и удобно.
+        </p>
+        <div class="hero__actions">
+          <button class="btn btn--primary btn--lg" id="heroAppointment">Записаться на приём</button>
+          <a href="#services" class="btn btn--outline btn--lg">Наши услуги</a>
+        </div>
+      </div>
+      <div class="hero__image">
+        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="50" y="80" width="300" height="180" rx="16" fill="#00a8a8" opacity="0.15"/>
+          <circle cx="200" cy="130" r="50" fill="#00a8a8" opacity="0.2"/>
+          <path d="M185 130h30M200 115v30" stroke="#00a8a8" stroke-width="6" stroke-linecap="round"/>
+          <rect x="80" y="200" width="80" height="12" rx="6" fill="#00a8a8" opacity="0.3"/>
+          <rect x="80" y="220" width="120" height="8" rx="4" fill="#00a8a8" opacity="0.2"/>
+          <rect x="240" y="200" width="80" height="12" rx="6" fill="#00a8a8" opacity="0.3"/>
+          <rect x="240" y="220" width="100" height="8" rx="4" fill="#00a8a8" opacity="0.2"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info cards -->
+  <section class="info-cards">
+    <div class="container info-cards__grid">
+      <div class="info-card">
+        <div class="info-card__icon">📍</div>
+        <div>
+          <div class="info-card__title">Адрес</div>
+          <div class="info-card__value" id="clinicAddress">ул. Гагарина, д. 15</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__icon">🕐</div>
+        <div>
+          <div class="info-card__title">Режим работы</div>
+          <div class="info-card__value" id="clinicHours">Пн–Пт: 08:00–20:00</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card__icon">📞</div>
+        <div>
+          <div class="info-card__title">Телефон</div>
+          <div class="info-card__value" id="clinicPhone">+7 (495) 123-45-67</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Медицинские услуги</h2>
+        <p class="section__subtitle">Широкий спектр консультаций, диагностики и процедур для вашего здоровья</p>
+      </div>
+      <div class="services__grid" id="servicesGrid">
+        <p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">Загрузка услуг...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Doctors -->
+  <section class="section section--alt" id="doctors">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Наши специалисты</h2>
+        <p class="section__subtitle">Опытные врачи различных специальностей готовы помочь вам</p>
+      </div>
+      <div class="doctors__grid" id="doctorsGrid">
+        <p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">Загрузка...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section" id="about">
+    <div class="container about__inner">
+      <div class="about__text">
+        <h2 class="section__title" style="text-align:left;margin-bottom:16px;">О медицинском центре</h2>
+        <p id="aboutText">
+          Мы заботимся о вашем здоровье, руководствуясь принципами доказательной медицины
+          и международными стандартами качества медицинской помощи.
+        </p>
+        <p>
+          В нашем многопрофильном медицинском центре вы можете посетить необходимого врача
+          и в комфортной атмосфере выполнить широкий спектр обследований.
+        </p>
+        <div class="about__features">
+          <div class="about__feature"><span class="about__feature-icon">✓</span> Современное оборудование</div>
+          <div class="about__feature"><span class="about__feature-icon">✓</span> Опытные специалисты</div>
+          <div class="about__feature"><span class="about__feature-icon">✓</span> Без очередей</div>
+          <div class="about__feature"><span class="about__feature-icon">✓</span> Онлайн-запись</div>
+        </div>
+      </div>
+      <div class="about__stats">
+        <div class="stat-card">
+          <div class="stat-card__number">10+</div>
+          <div class="stat-card__label">Видов услуг</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__number">6</div>
+          <div class="stat-card__label">Специалистов</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__number">15+</div>
+          <div class="stat-card__label">Лет опыта</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__number">7</div>
+          <div class="stat-card__label">Дней в неделю</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map / Contacts -->
+  <section class="map-section" id="contacts">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Как нас найти</h2>
+        <p class="section__subtitle" id="contactsAddress">ул. Гагарина, д. 15</p>
+      </div>
+      <div id="yandexMap" class="map-container"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <div class="footer__logo"><img src="/assets/logo.png" alt="МедКлиника"></div>
+          <p class="footer__desc">Многопрофильный медицинский центр. Забота о вашем здоровье — наш приоритет.</p>
+        </div>
+        <div>
+          <div class="footer__title">Навигация</div>
+          <ul class="footer__links">
+            <li><a href="#services">Услуги</a></li>
+            <li><a href="#doctors">Врачи</a></li>
+            <li><a href="#about">О клинике</a></li>
+            <li><a href="#contacts">Контакты</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer__title">Пациентам</div>
+          <ul class="footer__links">
+            <li><a href="#" id="footerAppointment">Запись на приём</a></li>
+            <li><a href="#services">Услуги и цены</a></li>
+            <li><a href="#doctors">Наши врачи</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer__title">Контакты</div>
+          <p class="footer__contact" id="footerPhone">+7 (495) 123-45-67</p>
+          <p class="footer__contact" id="footerEmail">info@medklinika-gagarin.ru</p>
+          <p class="footer__contact" id="footerHours">Пн–Пт: 08:00–20:00</p>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>&copy; 2026 МедКлиника на Гагарина. Все права защищены.</span>
+        <span>Лицензия № ЛО-77-01-012345</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Appointment Modal -->
+  <div class="modal-overlay" id="appointmentModal">
+    <div class="modal">
+      <button class="modal__close" id="closeModal">&times;</button>
+      <h2 class="modal__title">Запись на приём</h2>
+      <div class="form-message" id="formMessage"></div>
+      <form id="appointmentForm">
+        <div class="form-group">
+          <label for="apName">ФИО *</label>
+          <input type="text" id="apName" required placeholder="Иванов Иван Иванович">
+        </div>
+        <div class="form-group">
+          <label for="apPhone">Телефон *</label>
+          <input type="tel" id="apPhone" required placeholder="+7 (___) ___-__-__" value="+7 ">
+        </div>
+        <div class="form-group">
+          <label for="apDoctor">Врач *</label>
+          <select id="apDoctor" required>
+            <option value="">Выберите врача</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="apDate">Дата *</label>
+          <input type="date" id="apDate" required>
+        </div>
+        <div class="form-group">
+          <label>Свободное время *</label>
+          <div class="slot-picker" id="slotPicker">
+            <p class="slot-picker__hint">Выберите врача и дату, чтобы увидеть доступное время</p>
+          </div>
+          <input type="hidden" id="apSlotId">
+        </div>
+        <div class="form-group">
+          <label for="apEmail">Email (для уведомлений)</label>
+          <input type="email" id="apEmail" placeholder="email@example.com">
+        </div>
+        <div class="form-group">
+          <label for="apService">Услуга</label>
+          <select id="apService">
+            <option value="">Выберите услугу</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="apComment">Комментарий</label>
+          <textarea id="apComment" placeholder="Опишите причину обращения"></textarea>
+        </div>
+        <div class="form-group" id="payOnlineGroup" style="display:none;">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:500;cursor:pointer;">
+            <input type="checkbox" id="apPayOnline"> Оплатить онлайн после записи
+          </label>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:flex-start;gap:8px;font-weight:500;cursor:pointer;font-size:13px;">
+            <input type="checkbox" id="apConsent" required style="margin-top:3px;">
+            <span>Я даю <a href="/privacy.html" target="_blank">согласие на обработку персональных данных</a> в соответствии с 152-ФЗ</span>
+          </label>
+        </div>
+        <button type="submit" class="btn btn--primary" style="width:100%;">Отправить заявку</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal modal--success">
+      <div class="success-icon">✓</div>
+      <h2 class="modal__title">Запись оформлена!</h2>
+      <p class="success-text" id="successText">Мы ждём вас в клинике в назначенное время.</p>
+      <button class="btn btn--primary" id="closeSuccess" style="width:100%;margin-top:8px;">Отлично</button>
+    </div>
+  </div>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
