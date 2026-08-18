@@ -25,15 +25,24 @@ npm start
 
 Сайт: http://localhost:3000
 
-## Production
+## Production (Render)
+
+Постоянная ссылка после деплоя: **https://medklinika-gagarin.onrender.com**
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/vzhuh222/medklinika-gagarin)
+
+Репозиторий: https://github.com/vzhuh222/medklinika-gagarin
+
+Подробнее: [docs/DEPLOY_RENDER.md](docs/DEPLOY_RENDER.md)
 
 ```bash
+# Локально с PostgreSQL
 # В .env задайте DATABASE_URL=postgresql://...
 npm run init-db:pg
 npm start
 ```
 
-Подробнее: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+Общая документация: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
 ## Документация для продажи
 
