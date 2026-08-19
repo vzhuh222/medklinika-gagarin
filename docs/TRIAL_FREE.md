@@ -1,23 +1,22 @@
-# Бесплатная пробная версия
+# Бесплатная пробная версия (0 ₽)
 
-Всё необходимое для демо клинике — **0 ₽**, без SMS, оплаты и МедФлекс.
+## Рекомендуем: Koyeb
 
-## Что входит бесплатно
+[![Deploy on Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/vzhuh222/medklinika-gagarin&branch=master&name=medklinika-gagarin&builder=dockerfile)
 
-| Функция | Статус |
-|---------|--------|
-| Сайт + онлайн-запись | ✅ |
-| Кабинет врача и админка | ✅ |
-| База данных (PostgreSQL) | ✅ |
-| Ссылка в интернете | `https://medklinika-gagarin.onrender.com` |
-| SMS / Email / ЮKassa / МедФлекс | ❌ выключены (не нужны для пробы) |
+**Бесплатно, без карты.** Подробная инструкция: [DEPLOY_KOYEB.md](DEPLOY_KOYEB.md)
 
-## Деплой (один раз, бесплатно)
+| | Koyeb | Render |
+|---|-------|--------|
+| Цена | 0 ₽ | 0 ₽, но база 30 дней |
+| Карта | обычно не нужна | часто просят |
+| Ссылка | `*.koyeb.app` | `*.onrender.com` |
 
-1. Откройте: https://render.com/deploy?repo=https://github.com/vzhuh222/medklinika-gagarin
-2. Войдите через GitHub
-3. Нажмите **Apply** → **Deploy Blueprint**
-4. Дождитесь статуса **Live** (~5 мин)
+## Быстрый старт (SQLite, без настройки БД)
+
+1. https://app.koyeb.com → **Create Web Service**
+2. GitHub → `medklinika-gagarin` → Dockerfile → **Free**
+3. Port: **8000**, Deploy
 
 ## Тестовые аккаунты
 
@@ -26,24 +25,11 @@
 | Админ | admin@medklinika.ru | admin123 |
 | Врач | smirnova@medklinika.ru | doctor123 |
 
-## Ограничения бесплатного тарифа
-
-- **Сайт «засыпает»** после ~15 мин без посещений — первый заход ~30–60 сек
-- **База Render бесплатна 30 дней** — для постоянной работы потом ~$6/мес или перенос на [Neon](https://neon.tech) (тоже бесплатно, без 30-дневного лимита)
-
-## Перенос базы на Neon (если проба дольше 30 дней)
-
-1. Зарегистрируйтесь на https://neon.tech (бесплатно)
-2. Создайте проект → скопируйте `DATABASE_URL`
-3. Render → medklinika-gagarin → Environment → замените `DATABASE_URL`
-4. Manual Deploy → сайт пересоберётся с новой базой
-
-## Обновления
+## Локально
 
 ```bash
-git add .
-git commit -m "изменения"
-git push
+npm install
+npm start
 ```
 
-Render обновит сайт автоматически.
+→ http://localhost:3000

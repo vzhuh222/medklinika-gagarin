@@ -25,13 +25,15 @@ npm start
 
 Сайт: http://localhost:3000
 
-## Бесплатная проба (production)
+## Бесплатная проба (0 ₽, без карты)
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/vzhuh222/medklinika-gagarin)
+**Koyeb** — полностью бесплатный хостинг для демо:
 
-Ссылка после деплоя: **https://medklinika-gagarin.onrender.com** — бесплатно, без SMS/оплаты/МедФлекс.
+[![Deploy on Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/vzhuh222/medklinika-gagarin&branch=master&name=medklinika-gagarin&builder=dockerfile)
 
-Инструкция: [docs/TRIAL_FREE.md](docs/TRIAL_FREE.md) · Деплой: [docs/DEPLOY_RENDER.md](docs/DEPLOY_RENDER.md)
+Инструкция: [docs/DEPLOY_KOYEB.md](docs/DEPLOY_KOYEB.md) · Кратко: [docs/TRIAL_FREE.md](docs/TRIAL_FREE.md)
+
+Ссылка после деплоя: `https://medklinika-gagarin-<логин>.koyeb.app`
 
 ## Документация для продажи
 
