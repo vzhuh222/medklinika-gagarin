@@ -8,13 +8,14 @@ services:
     runtime: node
     region: frankfurt
     plan: free
-    buildCommand: npm install
-    preDeployCommand: npm run init-db:pg
+    buildCommand: npm install && npm run init-db:pg
     startCommand: npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: RUN_DB_INIT
+        value: "true"
       - key: SITE_URL
         value: https://medklinika-gagarin.onrender.com
       - key: DATABASE_URL
