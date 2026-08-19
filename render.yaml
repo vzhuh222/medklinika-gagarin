@@ -1,10 +1,15 @@
+# Бесплатная пробная версия «МедКлиника на Гагарина»
+# Ссылка после деплоя: https://medklinika-gagarin.onrender.com
+# Деплой: https://render.com/deploy?repo=https://github.com/vzhuh222/medklinika-gagarin
+
 services:
   - type: web
     name: medklinika-gagarin
     runtime: node
     region: frankfurt
     plan: free
-    buildCommand: npm install && npm run init-db:pg
+    buildCommand: npm install
+    preDeployCommand: npm run init-db:pg
     startCommand: npm start
     healthCheckPath: /health
     envVars:
@@ -22,6 +27,11 @@ services:
         value: privacy@medklinika-gagarin.ru
       - key: ONEC_ORG_NAME
         value: МедКлиника на Гагарина
+      # Платные интеграции выключены для бесплатной пробы
+      - key: MEDFLEX_ENABLED
+        value: "false"
+      - key: ONEC_EXPORT_ENABLED
+        value: "true"
 
 databases:
   - name: medklinika-db

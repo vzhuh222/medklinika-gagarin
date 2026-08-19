@@ -9,7 +9,11 @@ function getPool() {
     if (!config.databaseUrl) {
       throw new Error('DATABASE_URL не задан. Укажите PostgreSQL или используйте SQLite (без DATABASE_URL).');
     }
-    pool = new Pool({ connectionString: config.databaseUrl });
+    const isLocal = /localhost|127\.0\.0\.1/.test(config.databaseUrl);
+    pool = new Pool({
+      connectionString: config.databaseUrl,
+      ssl: isLocal ? false : { rejectUnauthorized: false },
+    });
   }
   return pool;
 }
