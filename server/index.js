@@ -63,6 +63,13 @@ async function bootstrap() {
   setInterval(() => {
     processQueue().catch((err) => console.error('[notifications queue]', err.message));
   }, 60_000);
+
+  if (config.medflex.enabled) {
+    const { retryFailedSyncs } = require('./services/medflex');
+    setInterval(() => {
+      retryFailedSyncs(10).catch((err) => console.error('[medflex retry]', err.message));
+    }, 5 * 60_000);
+  }
 }
 
 bootstrap().catch((err) => {

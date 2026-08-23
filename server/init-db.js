@@ -40,6 +40,8 @@ function initDatabase() {
     'ALTER TABLE appointments ADD COLUMN medflex_external_id TEXT',
     "ALTER TABLE appointments ADD COLUMN sync_status TEXT DEFAULT 'local'",
     'ALTER TABLE appointments ADD COLUMN consent_id INTEGER',
+    'ALTER TABLE staff ADD COLUMN medflex_doctor_id TEXT',
+    'ALTER TABLE services ADD COLUMN medflex_service_id TEXT',
   ];
   for (const sql of migrations) {
     try { db.exec(sql); } catch (_) { /* column exists */ }

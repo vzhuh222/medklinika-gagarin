@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS staff (
     schedule        TEXT,
     phone           TEXT,
     email           TEXT,
+    medflex_doctor_id TEXT,
     is_active       INTEGER NOT NULL DEFAULT 1,
     sort_order      INTEGER NOT NULL DEFAULT 0,
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS services (
     description     TEXT,
     price_from      REAL,
     duration_min    INTEGER,
+    medflex_service_id TEXT,
     is_active       INTEGER NOT NULL DEFAULT 1,
     sort_order      INTEGER NOT NULL DEFAULT 0,
     created_at      TEXT NOT NULL DEFAULT (datetime('now'))

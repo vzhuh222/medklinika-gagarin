@@ -1,6 +1,6 @@
 const { logConsent, auditAccess, getPrivacyInfo } = require('./personal-data');
 const { queueAppointmentNotifications, processQueue } = require('./notifications');
-const { syncAppointmentToMedflex } = require('./medflex');
+const { syncAppointmentToMedflex, sendAppointmentEvent } = require('./medflex');
 
 async function afterAppointmentCreated(appointment, req) {
   try {
@@ -25,4 +25,30 @@ async function afterAppointmentCreated(appointment, req) {
   });
 }
 
-module.exports = { logConsent, auditAccess, getPrivacyInfo, afterAppointmentCreated, processQueue };
+async function afterAppointmentStatusChanged(appointmentId, newStatus, req) {
+  if (!['cancelled', 'confirmed', 'completed'].includes(newStatus)) return;
+
+  const event = newStatus === 'cancelled' ? 'cancelled' : 'updated';
+  try {
+    await sendAppointmentEvent(appointmentId, event);
+  } catch (err) {
+    console.error(`[medflex sync ${event}]`, err.message);
+  }
+
+  await auditAccess({
+    action: 'update',
+    entity_type: 'appointment',
+    entity_id: appointmentId,
+    ip_address: req?.ip,
+    details: `Статус записи изменён: ${newStatus}`,
+  });
+}
+
+module.exports = {
+  logConsent,
+  auditAccess,
+  getPrivacyInfo,
+  afterAppointmentCreated,
+  afterAppointmentStatusChanged,
+  processQueue,
+};

@@ -1,15 +1,23 @@
 const express = require('express');
 const db = require('../db');
 const { normalizePhone } = require('../utils/phone');
-const { logConsent, afterAppointmentCreated } = require('../services');
+const { logConsent, afterAppointmentCreated, afterAppointmentStatusChanged } = require('../services');
 
 const router = express.Router();
 
 router.get('/services', async (_req, res) => {
   const services = await db.getAll(`
-    SELECT id, name, category, description, price_from, duration_min
+    SELECT id, name, category, description, price_from, duration_min, medflex_service_id
     FROM services WHERE is_active = 1
     ORDER BY sort_order, name
+  `);
+  res.json(services);
+});
+
+router.get('/services/all', async (_req, res) => {
+  const services = await db.getAll(`
+    SELECT id, name, category, description, price_from, duration_min, medflex_service_id, is_active, sort_order
+    FROM services ORDER BY sort_order, name
   `);
   res.json(services);
 });
@@ -125,7 +133,8 @@ router.post('/appointments', async (req, res) => {
 router.get('/appointments', async (req, res) => {
   const { staff_id } = req.query;
   let query = `
-    SELECT a.*, s.first_name || ' ' || s.last_name AS doctor_name, sv.name AS service_name
+    SELECT a.*, s.first_name || ' ' || s.last_name AS doctor_name, sv.name AS service_name,
+           a.sync_status, a.medflex_external_id
     FROM appointments a
     LEFT JOIN staff s ON a.staff_id = s.id
     LEFT JOIN services sv ON a.service_id = sv.id
@@ -155,6 +164,8 @@ router.patch('/appointments/:id/status', async (req, res) => {
       await tx.run(`UPDATE time_slots SET status = 'available', appointment_id = NULL WHERE id = ?`, [appt.slot_id]);
     }
   });
+
+  afterAppointmentStatusChanged(parseInt(req.params.id, 10), status, req).catch(console.error);
 
   res.json({ success: true });
 });

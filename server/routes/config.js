@@ -9,6 +9,8 @@ router.get('/public', (_req, res) => {
     yandexMapsApiKey: config.yandexMapsApiKey,
     paymentsEnabled: Boolean(config.yookassa.shopId && config.yookassa.secretKey),
     medflexWidgetEnabled: Boolean(config.medflex.widgetHtml),
+    medflexMode: config.medflex.mode,
+    medflexEnabled: config.medflex.enabled,
     siteUrl: config.siteUrl,
   });
 });

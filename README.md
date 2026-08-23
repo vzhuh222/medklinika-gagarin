@@ -8,7 +8,7 @@
 - Кабинет врача (календарь, карточка пациента, история, файлы)
 - Админ-панель
 - **PostgreSQL** для production (SQLite — для локальной разработки)
-- **МедЛок / МедФлекс** — коннектор синхронизации записей
+- **МедЛок / МедФлекс** — коннектор синхронизации записей (готов к подключению)
 - **1С** — выгрузка выполненных услуг (XML/CSV)
 - **SMS + Email** — уведомления пациентам
 - **ЮKassa** — онлайн-оплата
@@ -39,6 +39,7 @@ npm start
 
 - [Коммерческий пакет](docs/COMMERCIAL_PACKAGE.md)
 - [Интеграция МедЛок / МедФлекс](docs/MEDLOCK_INTEGRATION.md)
+- [Передача клиенту — готовность к МедЛок](docs/MEDLOCK_HANDOVER.md)
 
 ## Тестовые аккаунты
 
@@ -51,8 +52,12 @@ npm start
 
 | Метод | URL |
 |-------|-----|
+| GET | /api/integrations/readiness |
 | GET | /api/integrations/status |
+| POST | /api/integrations/medflex/webhook |
 | POST | /api/integrations/medflex/sync/:id |
+| GET | /api/integrations/medflex/logs |
+| GET | /api/integrations/mappings |
 | GET | /api/integrations/1c/export.xml |
 | POST | /api/payments/create |
 | GET | /api/config/privacy |

@@ -95,13 +95,50 @@ async function loadClinicInfo() {
 }
 
 let paymentsEnabled = false;
+let medflexMode = 'native';
+
+async function initMedflexWidget(cfg) {
+  const section = document.getElementById('medflexBooking');
+  const container = document.getElementById('medflexWidgetContainer');
+  if (!section || !container) return;
+
+  const showWidget = cfg.medflexWidgetEnabled && (cfg.medflexMode === 'widget' || cfg.medflexMode === 'both');
+  const hideNative = cfg.medflexMode === 'widget';
+
+  if (showWidget) {
+    try {
+      const widget = await fetchJSON(`${API}/integrations/medflex/widget`);
+      container.innerHTML = widget.html;
+      section.style.display = '';
+      const scripts = container.querySelectorAll('script');
+      scripts.forEach(oldScript => {
+        const s = document.createElement('script');
+        if (oldScript.src) s.src = oldScript.src;
+        else s.textContent = oldScript.textContent;
+        oldScript.replaceWith(s);
+      });
+    } catch (e) {
+      console.warn('MedFlex widget:', e.message);
+    }
+  }
+
+  if (hideNative) {
+    document.querySelectorAll('#openAppointment, #heroAppointment, #footerAppointment').forEach(el => {
+      el.style.display = 'none';
+    });
+    const modal = document.getElementById('appointmentModal');
+    if (modal) modal.remove();
+  }
+}
 
 async function loadPublicConfig() {
   try {
     const cfg = await fetchJSON(`${API}/config/public`);
     paymentsEnabled = cfg.paymentsEnabled;
+    medflexMode = cfg.medflexMode || 'native';
     if (cfg.yandexMapsApiKey) initYandexMap(cfg.yandexMapsApiKey);
     else showMapFallback();
+    await initMedflexWidget(cfg);
   } catch {
     showMapFallback();
   }

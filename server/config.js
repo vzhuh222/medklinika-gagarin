@@ -28,10 +28,15 @@ module.exports = {
 
   medflex: {
     enabled: process.env.MEDFLEX_ENABLED === 'true',
+    mode: process.env.MEDFLEX_MODE || 'native',
     webhookUrl: process.env.MEDFLEX_WEBHOOK_URL || '',
     apiKey: process.env.MEDFLEX_API_KEY || '',
     partnerId: process.env.MEDFLEX_PARTNER_ID || '',
     widgetHtml: process.env.MEDFLEX_WIDGET_HTML || '',
+  },
+
+  medlock: {
+    branchId: process.env.MEDLOCK_BRANCH_ID || '',
   },
 
   oneC: {

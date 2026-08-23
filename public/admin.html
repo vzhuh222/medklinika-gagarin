@@ -31,6 +31,7 @@
         <button class="admin-tab active doctor-only" data-tab="calendar" style="display:none;">Календарь</button>
         <button class="admin-tab doctor-only" data-tab="appointments-list" style="display:none;">Список записей</button>
         <button class="admin-tab admin-only" data-tab="appointments">Записи</button>
+        <button class="admin-tab admin-only" data-tab="integrations">МедЛок</button>
       </div>
 
       <!-- Staff panel (admin only) -->
@@ -255,11 +256,17 @@
                 <th>Врач</th>
                 <th>Услуга</th>
                 <th>Статус</th>
+                <th>МедЛок</th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="appointmentsTable"></tbody>
           </table>
         </div>
+      </div>
+
+      <div class="admin-panel admin-only" id="panel-integrations">
+        <div id="integrationsRoot"><p style="color:var(--text-muted);">Загрузка…</p></div>
       </div>
     </div>
   </div>
@@ -274,6 +281,7 @@
   </div>
 
   <script src="/js/doctor.js"></script>
+  <script src="/js/integrations-admin.js"></script>
   <script>
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     const isAdmin = user?.role === 'admin';
@@ -302,6 +310,9 @@
       window.location.href = '/login.html';
     });
 
+    const statusMap = { pending: 'Ожидает', confirmed: 'Подтверждена', cancelled: 'Отменена', completed: 'Завершена' };
+    const syncStatusMap = { local: 'Локально', pending: '…', synced: '✓', failed: '✗' };
+
     document.querySelectorAll('.admin-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         if (tab.style.display === 'none') return;
@@ -309,6 +320,9 @@
         document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
         tab.classList.add('active');
         document.getElementById(`panel-${tab.dataset.tab}`).classList.add('active');
+        if (tab.dataset.tab === 'integrations' && typeof loadIntegrationsPanel === 'function') {
+          loadIntegrationsPanel();
+        }
       });
     });
 
@@ -318,8 +332,6 @@
       if (!res.ok) throw new Error(data.error || 'Ошибка');
       return data;
     }
-
-    const statusMap = { pending: 'Ожидает', confirmed: 'Подтверждена', cancelled: 'Отменена', completed: 'Завершена' };
 
     async function loadStaff() {
       if (!isAdmin) return;
@@ -451,9 +463,18 @@
           <td>${a.doctor_name || '—'}</td>
           <td>${a.service_name || '—'}</td>
           <td><span class="badge badge--blue">${statusMap[a.status] || a.status}</span></td>
+          <td><span class="badge ${a.sync_status === 'synced' ? 'badge--green' : a.sync_status === 'failed' ? 'badge--red' : 'badge--blue'}">${syncStatusMap[a.sync_status] || a.sync_status || '—'}</span></td>
+          <td onclick="event.stopPropagation()">
+            ${a.sync_status === 'failed' ? `<button class="btn btn--outline btn--sm" onclick="retrySync(${a.id})">↻</button>` : ''}
+          </td>
         </tr>
-      `).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Записей пока нет</td></tr>';
+      `).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Записей пока нет</td></tr>';
     }
+
+    window.retrySync = async (id) => {
+      await fetchJSON(`/api/integrations/medflex/sync/${id}`, { method: 'POST' });
+      loadAppointments();
+    };
 
     if (isAdmin) {
       loadStaff();

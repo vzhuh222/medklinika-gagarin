@@ -1064,3 +1064,96 @@ tr:hover td { background: var(--bg-alt); }
 
 .clickable-row { cursor: pointer; }
 .clickable-row:hover td { background: var(--primary-light) !important; }
+
+/* MedLock / integrations admin */
+.integration-banner {
+  background: var(--primary-light);
+  border-left: 4px solid var(--primary);
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.integration-banner a { color: var(--primary); font-weight: 600; }
+
+.integration-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.integration-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.integration-card__label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.integration-card__value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.integration-card__value--small {
+  font-size: 11px;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.checklist { list-style: none; padding: 0; margin: 0; }
+
+.checklist__item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.checklist__item--done { opacity: 0.85; }
+
+.checklist__mark {
+  font-size: 18px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.checklist__progress {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.checklist__hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.mapping-input {
+  width: 100%;
+  min-width: 140px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 13px;
+}
+
+.medflex-widget {
+  min-height: 400px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.section--medflex { background: var(--bg-alt); }

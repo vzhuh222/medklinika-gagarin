@@ -7,7 +7,8 @@ router.get('/', async (req, res) => {
   const activeOnly = req.query.active !== 'false';
   const staff = await db.getAll(`
     SELECT id, first_name, last_name, middle_name, specialty, position, qualification,
-           experience_years, education, photo_url, description, schedule, phone, email, is_active, sort_order
+           experience_years, education, photo_url, description, schedule, phone, email,
+           medflex_doctor_id, is_active, sort_order
     FROM staff
     ${activeOnly ? 'WHERE is_active = 1' : ''}
     ORDER BY sort_order, last_name
@@ -18,7 +19,8 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const member = await db.getOne(`
     SELECT id, first_name, last_name, middle_name, specialty, position, qualification,
-           experience_years, education, photo_url, description, schedule, phone, email, is_active
+           experience_years, education, photo_url, description, schedule, phone, email,
+           medflex_doctor_id, is_active
     FROM staff WHERE id = ?
   `, [req.params.id]);
   if (!member) return res.status(404).json({ error: 'Сотрудник не найден' });
@@ -55,7 +57,8 @@ router.put('/:id', async (req, res) => {
 
   const fields = [
     'first_name', 'last_name', 'middle_name', 'specialty', 'position', 'qualification',
-    'experience_years', 'education', 'photo_url', 'description', 'schedule', 'phone', 'email', 'is_active', 'sort_order',
+    'experience_years', 'education', 'photo_url', 'description', 'schedule', 'phone', 'email',
+    'medflex_doctor_id', 'is_active', 'sort_order',
   ];
 
   const updates = [];
