@@ -1,42 +1,24 @@
-# Бесплатная пробная версия «МедКлиника на Гагарина»
-# Ссылка после деплоя: https://medklinika-gagarin.onrender.com
+# Бесплатный демо-хостинг без банковской карты.
+# База — SQLite внутри сервиса (без Render Postgres: именно он раньше просил карту).
 # Деплой: https://render.com/deploy?repo=https://github.com/vzhuh222/medklinika-gagarin
 
 services:
   - type: web
     name: medklinika-gagarin
-    runtime: node
+    runtime: docker
     region: frankfurt
     plan: free
-    buildCommand: npm install && npm run init-db:pg
-    startCommand: npm start
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: RUN_DB_INIT
-        value: "true"
-      - key: SITE_URL
-        value: https://medklinika-gagarin.onrender.com
-      - key: DATABASE_URL
-        fromDatabase:
-          name: medklinika-db
-          property: connectionString
+      - key: MEDFLEX_ENABLED
+        value: "false"
       - key: PD_OPERATOR_NAME
         value: МедКлиника на Гагарина
       - key: PD_DPO_EMAIL
         value: privacy@medklinika-gagarin.ru
       - key: ONEC_ORG_NAME
         value: МедКлиника на Гагарина
-      # Платные интеграции выключены для бесплатной пробы
-      - key: MEDFLEX_ENABLED
-        value: "false"
-      - key: ONEC_EXPORT_ENABLED
-        value: "true"
-
-databases:
-  - name: medklinika-db
-    region: frankfurt
-    plan: free
-    databaseName: medklinika
-    user: medklinika

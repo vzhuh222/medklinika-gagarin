@@ -62,6 +62,10 @@ MEDFLEX_WIDGET_HTML=<код из личного кабинета МедФлек�
 
 ## API для технического специалиста
 
+Все методы `/api/integrations/*`, кроме входящего webhook, требуют токен администратора.
+Токен выдаётся при входе (`POST /api/auth/login`) и передаётся в заголовке
+`Authorization: Bearer <token>`. Webhook авторизуется собственным ключом партнёра МедФлекс.
+
 | Метод | URL |
 |-------|-----|
 | GET | `/api/integrations/readiness` |

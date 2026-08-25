@@ -1157,3 +1157,223 @@ tr:hover td { background: var(--bg-alt); }
 }
 
 .section--medflex { background: var(--bg-alt); }
+
+/* ===== Загрузка и пустые состояния ===== */
+
+.skeleton-card {
+  min-height: 180px;
+  border-radius: var(--radius-lg, 12px);
+  background: linear-gradient(90deg, var(--bg-alt) 25%, #eef3f5 50%, var(--bg-alt) 75%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-card { animation: none; }
+}
+
+.grid-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 24px 0;
+}
+
+.grid-message--error { color: var(--danger, #d9534f); }
+
+.table-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px 0;
+}
+
+.hint-text {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ===== Фильтры услуг ===== */
+
+.service-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.filter-chip {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+
+.filter-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.section__note {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.form-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== Уведомления в панели сотрудников ===== */
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translate(-50%, 16px);
+  z-index: 1000;
+  max-width: min(90vw, 460px);
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  background: var(--text);
+  color: #fff;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast--visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.toast--error { background: #c0392b; }
+.toast--success { background: #1e8e5a; }
+
+/* ===== Карточка пациента и расписание ===== */
+
+.day-slot__label {
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn--active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.file-item__date {
+  color: var(--text-light, var(--text-muted));
+  font-size: 11px;
+}
+
+.log-error {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 260px;
+  overflow-wrap: anywhere;
+}
+
+/* ===== Подвал ===== */
+
+.footer__legal {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer__contact a { color: inherit; text-decoration: none; }
+.footer__contact a:hover { text-decoration: underline; }
+
+.auth-card__demo {
+  margin-top: 24px;
+  padding: 12px;
+  background: var(--bg-alt);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.admin-form__subtitle {
+  margin: 22px 0 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.credentials-result {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  background: var(--primary-light, #e8f8f7);
+}
+
+.credentials-result div { margin-top: 8px; }
+.credentials-result .btn { margin-top: 12px; }
+.credentials-result code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fff;
+  user-select: all;
+}
+
+.info-card__value a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.info-card__value a:hover { color: var(--primary); }
+
+.map-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  text-align: center;
+  padding: 24px;
+}
+
+.doctor-card__book { margin-top: 12px; }
+
+.doctor-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

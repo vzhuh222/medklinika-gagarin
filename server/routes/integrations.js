@@ -12,8 +12,21 @@ const {
 } = require('../services/medflex');
 const { exportCompletedServices, exportCsv } = require('../services/onec');
 const { processQueue } = require('../services/notifications');
+const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Входящий webhook МедФлекс авторизуется собственным ключом партнёра.
+router.post('/medflex/webhook', async (req, res) => {
+  try {
+    const result = await handleMedflexWebhook(req.body, req.headers);
+    res.json(result);
+  } catch (err) {
+    res.status(err.message === 'Unauthorized' ? 401 : 400).json({ error: err.message });
+  }
+});
+
+router.use(requireAdmin);
 
 router.get('/status', async (_req, res) => {
   res.json({
@@ -72,15 +85,6 @@ router.put('/mappings/services/:id', async (req, res) => {
     SELECT id, name, category, medflex_service_id FROM services WHERE id = ?
   `, [req.params.id]);
   res.json(service);
-});
-
-router.post('/medflex/webhook', async (req, res) => {
-  try {
-    const result = await handleMedflexWebhook(req.body, req.headers);
-    res.json(result);
-  } catch (err) {
-    res.status(err.message === 'Unauthorized' ? 401 : 400).json({ error: err.message });
-  }
 });
 
 router.post('/medflex/sync/:appointmentId', async (req, res) => {

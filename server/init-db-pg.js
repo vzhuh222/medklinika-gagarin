@@ -32,33 +32,7 @@ async function initPostgresDatabase() {
   }
 
   const adminHash = bcrypt.hashSync('admin123', 10);
-  const doctorHash = bcrypt.hashSync('doctor123', 10);
-
   await pool.query('UPDATE users SET password_hash = $1 WHERE email = $2', [adminHash, 'admin@medklinika.ru']);
-  await pool.query('UPDATE users SET password_hash = $1 WHERE email = $2', [doctorHash, 'smirnova@medklinika.ru']);
-
-  const insertSlot = `
-    INSERT INTO time_slots (staff_id, slot_date, slot_time, duration_min, status)
-    VALUES ($1, $2, $3, 30, 'available')
-    ON CONFLICT DO NOTHING
-  `;
-
-  for (let day = 1; day <= 14; day++) {
-    const d = new Date();
-    d.setDate(d.getDate() + day);
-    const dateStr = d.toISOString().split('T')[0];
-    const weekday = d.getDay();
-    if (weekday === 0) continue;
-
-    const times = weekday === 6
-      ? ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30']
-      : ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
-
-    for (const time of times) {
-      await pool.query(insertSlot, [1, dateStr, time]);
-      await pool.query(insertSlot, [2, dateStr, time]);
-    }
-  }
 
   console.log('PostgreSQL база данных инициализирована');
 }

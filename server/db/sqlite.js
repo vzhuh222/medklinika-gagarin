@@ -27,26 +27,46 @@ async function getAll(sql, params = []) {
   return getDb().prepare(sql).all(...params);
 }
 
-async function run(sql, params = []) {
-  const result = getDb().prepare(sql).run(...params);
-  return {
-    rowCount: result.changes,
-    lastInsertRowid: result.lastInsertRowid,
-    rows: [],
-  };
+/**
+ * better-sqlite3 бросает исключение на .run() для запросов с RETURNING,
+ * поэтому такие запросы выполняем через .all() и отдаём строки.
+ */
+function execute(database, sql, params) {
+  const statement = database.prepare(sql);
+  if (statement.reader) {
+    const rows = statement.all(...params);
+    return { rowCount: rows.length, lastInsertRowid: rows[0]?.id, rows };
+  }
+  const result = statement.run(...params);
+  return { rowCount: result.changes, lastInsertRowid: result.lastInsertRowid, rows: [] };
 }
 
+async function run(sql, params = []) {
+  return execute(getDb(), sql, params);
+}
+
+/**
+ * better-sqlite3 не принимает async-колбэк в database.transaction(),
+ * поэтому границами транзакции управляем вручную — все операции внутри синхронные.
+ */
 async function transaction(fn) {
   const database = getDb();
   const tx = {
-    getOne: (sql, params) => database.prepare(sql).get(...params) || null,
-    run: (sql, params) => {
-      const result = database.prepare(sql).run(...params);
-      return { rowCount: result.changes, lastInsertRowid: result.lastInsertRowid, rows: [] };
-    },
+    query: (sql, params = []) => ({ rows: database.prepare(sql).all(...params) }),
+    getOne: (sql, params = []) => database.prepare(sql).get(...params) || null,
+    getAll: (sql, params = []) => database.prepare(sql).all(...params),
+    run: (sql, params = []) => execute(database, sql, params),
   };
-  const wrapped = database.transaction(() => fn(tx));
-  return wrapped();
+
+  database.prepare('BEGIN IMMEDIATE').run();
+  try {
+    const result = await fn(tx);
+    database.prepare('COMMIT').run();
+    return result;
+  } catch (err) {
+    if (database.inTransaction) database.prepare('ROLLBACK').run();
+    throw err;
+  }
 }
 
 module.exports = { query, getOne, getAll, run, transaction, getDb };

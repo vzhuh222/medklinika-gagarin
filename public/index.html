@@ -3,12 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>МедКлиника на Гагарина — Медицинский центр</title>
-  <meta name="description" content="Многопрофильный медицинский центр на ул. Гагарина. Консультации врачей, диагностика, анализы. Запись на приём онлайн.">
+  <title>МедКлиника на Гагарина — медицинский центр в Киржаче</title>
+  <meta name="description" content="Многопрофильная клиника в Киржаче на ул. Гагарина, 37. Кардиолог, хирург, гинеколог, терапевт, уролог, флеболог. УЗИ-диагностика и анализы ИНВИТРО. Запись на приём онлайн.">
+  <meta name="theme-color" content="#00a8a8">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="МедКлиника на Гагарина">
+  <meta property="og:title" content="МедКлиника на Гагарина — медицинский центр в Киржаче">
+  <meta property="og:description" content="Кардиолог, хирург, гинеколог, терапевт, уролог, флеболог. УЗИ-диагностика и лабораторные анализы от ИНВИТРО. Киржач, ул. Гагарина, 37.">
+  <meta property="og:image" content="/assets/banner-opening.png">
+  <meta property="og:locale" content="ru_RU">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=2.2">
   <link rel="icon" href="/assets/logo.png" type="image/png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MedicalClinic",
+    "name": "МедКлиника на Гагарина",
+    "image": "/assets/logo.png",
+    "telephone": "+7 (920) 620-23-86",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Гагарина, 37",
+      "addressLocality": "Киржач",
+      "addressRegion": "Владимирская область",
+      "addressCountry": "RU"
+    },
+    "geo": { "@type": "GeoCoordinates", "latitude": 56.1626, "longitude": 38.8740 }
+  }
+  </script>
 </head>
 <body>
 
@@ -27,10 +56,10 @@
         </ul>
       </nav>
       <div class="header__actions">
-        <a href="tel:+74951234567" class="header__phone" id="headerPhone">+7 (495) 123-45-67</a>
+        <a href="tel:+79206202386" class="header__phone" id="headerPhone">+7 (920) 620-23-86</a>
         <a href="/login.html" class="header__staff-link">Сотрудникам</a>
         <button class="btn btn--primary btn--sm" id="openAppointment">Записаться</button>
-        <button class="burger" id="burger" aria-label="Меню">
+        <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
           <span></span><span></span><span></span>
         </button>
       </div>
@@ -44,8 +73,8 @@
         <span class="hero__badge">Медицинский центр</span>
         <h1 class="hero__title" id="clinicName">МедКлиника на Гагарина</h1>
         <p class="hero__subtitle" id="clinicDesc">
-          Многопрофильный медицинский центр с современным оборудованием.
-          Запишитесь к врачу онлайн — быстро и удобно.
+          Многопрофильная клиника в Киржаче — ранее «Инвитро».
+          Опытные врачи, УЗИ-диагностика и лабораторные анализы от ИНВИТРО.
         </p>
         <div class="hero__actions">
           <button class="btn btn--primary btn--lg" id="heroAppointment">Записаться на приём</button>
@@ -73,7 +102,7 @@
         <div class="info-card__icon">📍</div>
         <div>
           <div class="info-card__title">Адрес</div>
-          <div class="info-card__value" id="clinicAddress">ул. Гагарина, д. 15</div>
+          <div class="info-card__value" id="clinicAddress">Киржач, ул. Гагарина, 37</div>
         </div>
       </div>
       <div class="info-card">
@@ -87,7 +116,7 @@
         <div class="info-card__icon">📞</div>
         <div>
           <div class="info-card__title">Телефон</div>
-          <div class="info-card__value" id="clinicPhone">+7 (495) 123-45-67</div>
+          <div class="info-card__value"><a href="tel:+79206202386" id="clinicPhone">+7 (920) 620-23-86</a></div>
         </div>
       </div>
     </div>
@@ -109,11 +138,16 @@
     <div class="container">
       <div class="section__header">
         <h2 class="section__title">Медицинские услуги</h2>
-        <p class="section__subtitle">Широкий спектр консультаций, диагностики и процедур для вашего здоровья</p>
+        <p class="section__subtitle">Консультации специалистов, УЗИ-диагностика и лабораторные анализы от ИНВИТРО</p>
       </div>
+      <div class="service-filters" id="serviceFilters"></div>
       <div class="services__grid" id="servicesGrid">
-        <p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">Загрузка услуг...</p>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
+      <p class="section__note">Указана минимальная стоимость. Актуальные цены уточняйте по телефону
+        <a href="tel:+79206202386">+7 (920) 620-23-86</a>.</p>
     </div>
   </section>
 
@@ -125,7 +159,9 @@
         <p class="section__subtitle">Опытные врачи различных специальностей готовы помочь вам</p>
       </div>
       <div class="doctors__grid" id="doctorsGrid">
-        <p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">Загрузка...</p>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
     </div>
   </section>
@@ -140,31 +176,32 @@
           и международными стандартами качества медицинской помощи.
         </p>
         <p>
-          В нашем многопрофильном медицинском центре вы можете посетить необходимого врача
-          и в комфортной атмосфере выполнить широкий спектр обследований.
+          Клиника работает в Киржаче на месте прежнего офиса «Инвитро». Здесь можно попасть
+          к кардиологу, хирургу, гинекологу, терапевту, урологу и флебологу, пройти УЗИ
+          и сдать анализы — лабораторная диагностика по-прежнему выполняется ИНВИТРО.
         </p>
         <div class="about__features">
           <div class="about__feature"><span class="about__feature-icon">✓</span> Современное оборудование</div>
           <div class="about__feature"><span class="about__feature-icon">✓</span> Опытные специалисты</div>
-          <div class="about__feature"><span class="about__feature-icon">✓</span> Без очередей</div>
-          <div class="about__feature"><span class="about__feature-icon">✓</span> Онлайн-запись</div>
+          <div class="about__feature"><span class="about__feature-icon">✓</span> Анализы от ИНВИТРО</div>
+          <div class="about__feature"><span class="about__feature-icon">✓</span> Запись без очередей</div>
         </div>
       </div>
       <div class="about__stats">
         <div class="stat-card">
-          <div class="stat-card__number">10+</div>
+          <div class="stat-card__number" id="statServices">—</div>
           <div class="stat-card__label">Видов услуг</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number">6</div>
+          <div class="stat-card__number" id="statDoctors">—</div>
           <div class="stat-card__label">Специалистов</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number">15+</div>
+          <div class="stat-card__number" id="statExperience">—</div>
           <div class="stat-card__label">Лет опыта</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number">7</div>
+          <div class="stat-card__number">6</div>
           <div class="stat-card__label">Дней в неделю</div>
         </div>
       </div>
@@ -176,7 +213,7 @@
     <div class="container">
       <div class="section__header">
         <h2 class="section__title">Как нас найти</h2>
-        <p class="section__subtitle" id="contactsAddress">ул. Гагарина, д. 15</p>
+        <p class="section__subtitle" id="contactsAddress">Владимирская обл., г. Киржач, ул. Гагарина, 37</p>
       </div>
       <div id="yandexMap" class="map-container"></div>
     </div>
@@ -187,8 +224,8 @@
     <div class="container">
       <div class="footer__grid">
         <div>
-          <div class="footer__logo"><img src="/assets/logo.png" alt="МедКлиника"></div>
-          <p class="footer__desc">Многопрофильный медицинский центр. Забота о вашем здоровье — наш приоритет.</p>
+          <div class="footer__logo"><img src="/assets/logo.png" alt="МедКлиника на Гагарина"></div>
+          <p class="footer__desc">Многопрофильная клиника в Киржаче. Забота о вашем здоровье — наш приоритет.</p>
         </div>
         <div>
           <div class="footer__title">Навигация</div>
@@ -209,32 +246,40 @@
         </div>
         <div>
           <div class="footer__title">Контакты</div>
-          <p class="footer__contact" id="footerPhone">+7 (495) 123-45-67</p>
+          <p class="footer__contact"><a href="tel:+79206202386" id="footerPhone">+7 (920) 620-23-86</a></p>
           <p class="footer__contact" id="footerEmail">info@medklinika-gagarin.ru</p>
           <p class="footer__contact" id="footerHours">Пн–Пт: 08:00–20:00</p>
+          <p class="footer__contact" id="footerAddress">Киржач, ул. Гагарина, 37</p>
         </div>
       </div>
       <div class="footer__bottom">
-        <span>&copy; 2026 МедКлиника на Гагарина. Все права защищены.</span>
-        <span>Лицензия № ЛО-77-01-012345</span>
+        <span>&copy; <span id="footerYear">2026</span> МедКлиника на Гагарина</span>
+        <span class="footer__legal">
+          <a href="/privacy.html">Политика конфиденциальности</a>
+          <!-- Номер лицензии на медицинскую деятельность заполняет клиника -->
+          <span id="footerLicense" hidden></span>
+        </span>
       </div>
     </div>
   </footer>
 
   <!-- Appointment Modal -->
-  <div class="modal-overlay" id="appointmentModal">
+  <div class="modal-overlay" id="appointmentModal" role="dialog" aria-modal="true" aria-labelledby="appointmentTitle">
     <div class="modal">
-      <button class="modal__close" id="closeModal">&times;</button>
-      <h2 class="modal__title">Запись на приём</h2>
+      <button class="modal__close" id="closeModal" aria-label="Закрыть окно записи">&times;</button>
+      <h2 class="modal__title" id="appointmentTitle">Запись на приём</h2>
       <div class="form-message" id="formMessage"></div>
       <form id="appointmentForm">
         <div class="form-group">
           <label for="apName">ФИО *</label>
-          <input type="text" id="apName" required placeholder="Иванов Иван Иванович">
+          <input type="text" id="apName" required minlength="3" maxlength="120"
+                 autocomplete="name" placeholder="Иванов Иван Иванович">
         </div>
         <div class="form-group">
           <label for="apPhone">Телефон *</label>
-          <input type="tel" id="apPhone" required placeholder="+7 (___) ___-__-__" value="+7 ">
+          <input type="tel" id="apPhone" required autocomplete="tel"
+                 placeholder="+7 (___) ___-__-__" value="+7 ">
+          <small class="form-hint">На этот номер позвонит администратор для подтверждения</small>
         </div>
         <div class="form-group">
           <label for="apDoctor">Врач *</label>
@@ -255,7 +300,7 @@
         </div>
         <div class="form-group">
           <label for="apEmail">Email (для уведомлений)</label>
-          <input type="email" id="apEmail" placeholder="email@example.com">
+          <input type="email" id="apEmail" autocomplete="email" placeholder="email@example.com">
         </div>
         <div class="form-group">
           <label for="apService">Услуга</label>
@@ -265,7 +310,7 @@
         </div>
         <div class="form-group">
           <label for="apComment">Комментарий</label>
-          <textarea id="apComment" placeholder="Опишите причину обращения"></textarea>
+          <textarea id="apComment" maxlength="1000" placeholder="Опишите причину обращения"></textarea>
         </div>
         <div class="form-group" id="payOnlineGroup" style="display:none;">
           <label style="display:flex;align-items:center;gap:8px;font-weight:500;cursor:pointer;">
@@ -284,7 +329,7 @@
   </div>
 
   <!-- Success Modal -->
-  <div class="modal-overlay" id="successModal">
+  <div class="modal-overlay" id="successModal" role="dialog" aria-modal="true">
     <div class="modal modal--success">
       <div class="success-icon">✓</div>
       <h2 class="modal__title">Запись оформлена!</h2>
@@ -293,6 +338,6 @@
     </div>
   </div>
 
-  <script src="/js/main.js"></script>
+  <script src="/js/main.js?v=2.2"></script>
 </body>
 </html>

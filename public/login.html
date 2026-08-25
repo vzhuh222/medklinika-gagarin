@@ -6,7 +6,7 @@
   <title>Вход для сотрудников — МедКлиника на Гагарина</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=2.2">
   <link rel="icon" href="/assets/logo.png" type="image/png">
 </head>
 <body>
@@ -22,52 +22,69 @@
 
       <form id="loginForm">
         <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" required placeholder="email@medklinika.ru">
+          <label for="email">Логин</label>
+          <input type="text" id="email" required autocomplete="username" placeholder="Логин сотрудника">
         </div>
         <div class="form-group">
           <label for="password">Пароль</label>
           <input type="password" id="password" required placeholder="••••••••">
         </div>
-        <button type="submit" class="btn btn--primary" style="width:100%;">Войти</button>
+        <button type="submit" class="btn btn--primary" id="submitBtn" style="width:100%;">Войти</button>
       </form>
 
       <div class="auth-card__footer">
         <a href="/">← На главную</a>
       </div>
 
-      <div style="margin-top:24px;padding:12px;background:var(--bg-alt);border-radius:var(--radius);font-size:12px;color:var(--text-muted);">
-        <strong>Тестовые аккаунты:</strong><br>
+      <div class="auth-card__demo" id="demoCredentials" hidden>
+        <strong>Тестовые аккаунты (локальный режим):</strong><br>
         Админ: admin@medklinika.ru / admin123<br>
-        Врач: smirnova@medklinika.ru / doctor123
+        Учётные записи врачей создаются администратором.
       </div>
     </div>
   </div>
 
+  <script src="/js/api-client.js?v=2.2"></script>
   <script>
+    const msg = document.getElementById('formMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (['localhost', '127.0.0.1'].includes(location.hostname)) {
+      document.getElementById('demoCredentials').hidden = false;
+    }
+
+    if (new URLSearchParams(location.search).get('reason') === 'expired') {
+      msg.textContent = 'Сессия истекла. Войдите заново.';
+      msg.className = 'form-message error';
+    }
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const msg = document.getElementById('formMessage');
       msg.className = 'form-message';
       msg.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Вход…';
 
       try {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: document.getElementById('email').value,
+            email: document.getElementById('email').value.trim(),
             password: document.getElementById('password').value,
           }),
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Не удалось войти');
 
-        localStorage.setItem('user', JSON.stringify(data.user));
+        apiClient.saveSession(data.token, data.user);
         window.location.href = '/admin.html';
       } catch (err) {
         msg.textContent = err.message;
         msg.className = 'form-message error';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Войти';
       }
     });
   </script>

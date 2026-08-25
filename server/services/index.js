@@ -36,6 +36,8 @@ async function afterAppointmentStatusChanged(appointmentId, newStatus, req) {
   }
 
   await auditAccess({
+    user_id: req?.user?.id,
+    staff_id: req?.user?.staff_id,
     action: 'update',
     entity_type: 'appointment',
     entity_id: appointmentId,

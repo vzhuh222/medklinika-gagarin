@@ -1,29 +1,26 @@
 # Бесплатная пробная версия (0 ₽)
 
-## Рекомендуем: Koyeb
+## Рекомендуем: Render
 
-[![Deploy on Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/vzhuh222/medklinika-gagarin&branch=master&name=medklinika-gagarin&builder=dockerfile)
+Koyeb больше **не даёт бесплатный план новым аккаунтам**. Render даёт бесплатный веб-сервис **без карты**, если не подключать их Postgres.
 
-**Бесплатно, без карты.** Подробная инструкция: [DEPLOY_KOYEB.md](DEPLOY_KOYEB.md)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/vzhuh222/medklinika-gagarin)
 
-| | Koyeb | Render |
+Подробно: [DEPLOY_RENDER.md](DEPLOY_RENDER.md)
+
+| | Render (веб + SQLite) | Koyeb |
 |---|-------|--------|
-| Цена | 0 ₽ | 0 ₽, но база 30 дней |
-| Карта | обычно не нужна | часто просят |
-| Ссылка | `*.koyeb.app` | `*.onrender.com` |
-
-## Быстрый старт (SQLite, без настройки БД)
-
-1. https://app.koyeb.com → **Create Web Service**
-2. GitHub → `medklinika-gagarin` → Dockerfile → **Free**
-3. Port: **8000**, Deploy
+| Цена | 0 ₽ | от ~$29/мес для новых аккаунтов |
+| Карта | не нужна | нужна |
+| Ссылка | `*.onrender.com` | — |
 
 ## Тестовые аккаунты
 
 | Роль | Email | Пароль |
 |------|-------|--------|
 | Админ | admin@medklinika.ru | admin123 |
-| Врач | smirnova@medklinika.ru | doctor123 |
+
+Врачи и их логины создаются администратором на вкладке «Персонал».
 
 ## Локально
 

@@ -52,6 +52,10 @@ async function transaction(fn) {
         const r = await client.query(convertPlaceholders(sql), params);
         return r.rows[0] || null;
       },
+      getAll: async (sql, params) => {
+        const r = await client.query(convertPlaceholders(sql), params);
+        return r.rows;
+      },
       run: async (sql, params) => {
         const r = await client.query(convertPlaceholders(sql), params);
         return { rowCount: r.rowCount, rows: r.rows, lastInsertRowid: r.rows[0]?.id };

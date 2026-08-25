@@ -1,10 +1,3 @@
-const syncStatusMap = {
-  local: 'Локально',
-  pending: 'Отправка…',
-  synced: 'Синхронизировано',
-  failed: 'Ошибка',
-};
-
 async function loadIntegrationsPanel() {
   const root = document.getElementById('integrationsRoot');
   if (!root) return;
@@ -50,9 +43,9 @@ async function loadIntegrationsPanel() {
             <li class="checklist__item ${item.done ? 'checklist__item--done' : ''}">
               <span class="checklist__mark">${item.done ? '✓' : '○'}</span>
               <div>
-                <strong>${item.label}</strong>
-                ${item.progress ? `<span class="checklist__progress">${item.progress}</span>` : ''}
-                <p class="checklist__hint">${item.hint}</p>
+                <strong>${escapeHtml(item.label)}</strong>
+                ${item.progress ? `<span class="checklist__progress">${escapeHtml(item.progress)}</span>` : ''}
+                <p class="checklist__hint">${escapeHtml(item.hint)}</p>
               </div>
             </li>
           `).join('')}
@@ -97,68 +90,83 @@ async function loadIntegrationsPanel() {
 
     document.getElementById('doctorMappingTable').innerHTML = staff.filter(s => s.is_active).map(s => `
       <tr>
-        <td>${s.last_name} ${s.first_name}</td>
-        <td>${s.specialty}</td>
-        <td><input type="text" class="mapping-input" data-staff-id="${s.id}" value="${s.medflex_doctor_id || ''}" placeholder="doctor_id из МедФлекс"></td>
+        <td>${escapeHtml(`${s.last_name} ${s.first_name}`)}</td>
+        <td>${escapeHtml(s.specialty)}</td>
+        <td><input type="text" class="mapping-input" data-staff-id="${s.id}" value="${escapeHtml(s.medflex_doctor_id)}" placeholder="doctor_id из МедФлекс"></td>
         <td><button type="button" class="btn btn--primary btn--sm save-mapping-staff" data-id="${s.id}">Сохранить</button></td>
       </tr>
-    `).join('') || '<tr><td colspan="4">Нет врачей</td></tr>';
+    `).join('') || '<tr><td colspan="4" class="table-empty">Нет врачей</td></tr>';
 
     document.getElementById('serviceMappingTable').innerHTML = services.filter(s => s.is_active).map(s => `
       <tr>
-        <td>${s.name}</td>
-        <td>${s.category}</td>
-        <td><input type="text" class="mapping-input" data-service-id="${s.id}" value="${s.medflex_service_id || ''}" placeholder="service_id из МедФлекс"></td>
+        <td>${escapeHtml(s.name)}</td>
+        <td>${escapeHtml(s.category)}</td>
+        <td><input type="text" class="mapping-input" data-service-id="${s.id}" value="${escapeHtml(s.medflex_service_id)}" placeholder="service_id из МедФлекс"></td>
         <td><button type="button" class="btn btn--primary btn--sm save-mapping-service" data-id="${s.id}">Сохранить</button></td>
       </tr>
-    `).join('') || '<tr><td colspan="4">Нет услуг</td></tr>';
+    `).join('') || '<tr><td colspan="4" class="table-empty">Нет услуг</td></tr>';
 
     document.getElementById('syncLogsTable').innerHTML = logs.length ? logs.map(l => `
       <tr>
         <td>${new Date(l.created_at).toLocaleString('ru-RU')}</td>
         <td>${l.direction === 'outbound' ? '→ МедФлекс' : '← МедФлекс'}</td>
-        <td>${l.entity_type} #${l.entity_id || '—'}</td>
-        <td><span class="badge ${l.status === 'success' ? 'badge--green' : l.status === 'failed' ? 'badge--red' : 'badge--blue'}">${l.status}</span></td>
-        <td style="font-size:12px;color:var(--text-muted);">${l.error_message || '—'}</td>
+        <td>${escapeHtml(l.entity_type)} #${l.entity_id || '—'}</td>
+        <td><span class="badge ${l.status === 'success' ? 'badge--green' : l.status === 'failed' ? 'badge--red' : 'badge--blue'}">${escapeHtml(l.status)}</span></td>
+        <td class="log-error">${escapeHtml(l.error_message) || '—'}</td>
       </tr>
-    `).join('') : '<tr><td colspan="5">Записей пока нет</td></tr>';
+    `).join('') : '<tr><td colspan="5" class="table-empty">Записей пока нет</td></tr>';
 
-    root.querySelectorAll('.save-mapping-staff').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.dataset.id;
-        const input = root.querySelector(`input[data-staff-id="${id}"]`);
-        await fetchJSON(`/api/integrations/mappings/staff/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ medflex_doctor_id: input.value.trim() || null }),
+    function bindMapping(selector, buildUrl, buildBody) {
+      root.querySelectorAll(selector).forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const input = root.querySelector(`input[data-${btn.dataset.field}="${id}"]`);
+          btn.disabled = true;
+          try {
+            await fetchJSON(buildUrl(id), {
+              method: 'PUT',
+              body: JSON.stringify(buildBody(input.value.trim() || null)),
+            });
+            btn.textContent = '✓';
+            setTimeout(() => { btn.textContent = 'Сохранить'; }, 1500);
+          } catch (err) {
+            notifyIntegration(err.message);
+          } finally {
+            btn.disabled = false;
+          }
         });
-        btn.textContent = '✓';
-        setTimeout(() => { btn.textContent = 'Сохранить'; }, 1500);
       });
-    });
+    }
 
-    root.querySelectorAll('.save-mapping-service').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.dataset.id;
-        const input = root.querySelector(`input[data-service-id="${id}"]`);
-        await fetchJSON(`/api/integrations/mappings/services/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ medflex_service_id: input.value.trim() || null }),
-        });
-        btn.textContent = '✓';
-        setTimeout(() => { btn.textContent = 'Сохранить'; }, 1500);
-      });
-    });
+    root.querySelectorAll('.save-mapping-staff').forEach(b => { b.dataset.field = 'staff-id'; });
+    root.querySelectorAll('.save-mapping-service').forEach(b => { b.dataset.field = 'service-id'; });
+
+    bindMapping('.save-mapping-staff',
+      id => `/api/integrations/mappings/staff/${id}`,
+      value => ({ medflex_doctor_id: value }));
+
+    bindMapping('.save-mapping-service',
+      id => `/api/integrations/mappings/services/${id}`,
+      value => ({ medflex_service_id: value }));
 
     document.getElementById('retryFailedBtn')?.addEventListener('click', async () => {
-      const result = await fetchJSON('/api/integrations/medflex/retry-failed', { method: 'POST' });
-      alert(`Повторено: ${result.retried}, успешно: ${result.results.filter(r => r.ok).length}`);
-      loadIntegrationsPanel();
+      try {
+        const result = await fetchJSON('/api/integrations/medflex/retry-failed', { method: 'POST' });
+        const ok = result.results.filter(r => r.ok).length;
+        notifyIntegration(`Повторено: ${result.retried}, успешно: ${ok}`, 'success');
+        loadIntegrationsPanel();
+      } catch (err) {
+        notifyIntegration(err.message);
+      }
     });
   } catch (err) {
-    root.innerHTML = `<p class="form-message error">${err.message}</p>`;
+    root.innerHTML = `<p class="form-message error">${escapeHtml(err.message)}</p>`;
   }
+}
+
+function notifyIntegration(message, type = 'error') {
+  if (typeof showToast === 'function') showToast(message, type);
+  else console.log(message);
 }
 
 window.loadIntegrationsPanel = loadIntegrationsPanel;

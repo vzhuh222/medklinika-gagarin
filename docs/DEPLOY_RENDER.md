@@ -1,25 +1,42 @@
-# Render.com — бесплатный деплой
+# Бесплатный хостинг на Render (без карты)
 
-## Постоянная ссылка
+Сайт в интернете, ссылка для клиентов, **0 ₽**. Банковская карта не нужна, если **не** создавать базу Render Postgres.
 
-**https://medklinika-gagarin.onrender.com**
+## Ссылка после деплоя
 
-## Быстрый деплой (бесплатно)
+`https://medklinika-gagarin.onrender.com`
+
+(если имя занято, Render выдаст похожий адрес — он будет на экране после деплоя)
+
+## Один клик
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/vzhuh222/medklinika-gagarin)
 
-1. Нажмите кнопку выше или откройте ссылку
-2. Войдите через GitHub
-3. **Apply** → **Deploy Blueprint**
-4. Статус **Live** — сайт работает
+1. Откройте кнопку выше (войдите через GitHub, если попросит).
+2. Instance type: **Free**.
+3. **Apply** → дождитесь статуса **Live** (3–8 минут).
+4. Скопируйте URL и отправьте клиентам.
 
-Подробнее о пробной версии: [TRIAL_FREE.md](TRIAL_FREE.md)
+Админ: `admin@medklinika.ru` / `admin123`
 
-## Свой домен (позже, ~300–700 ₽/год)
+## Важно для демо
 
-1. Купите `medklinika-gagarin.ru` на reg.ru
-2. Render → Settings → Custom Domains
-3. DNS: CNAME → `medklinika-gagarin.onrender.com`
+- Первый заход после паузы может занять **30–60 секунд** (сервис засыпает через 15 минут без визитов).
+- Записи и врачи живут в SQLite на диске сервиса. После сна или перезапуска Render **может сбросить** этот файл.
+- Чтобы сайт не засыпал: на [cron-job.org](https://cron-job.org) (бесплатно, без карты) добавьте GET каждые 5 минут на `https://ваш-сайт.onrender.com/health`.
+
+## Если нужна постоянная база (тоже 0 ₽)
+
+1. [Neon](https://console.neon.tech/signup) — Postgres, без карты, вход через GitHub.
+2. Скопируйте connection string.
+3. Render → Environment → добавьте:
+
+| Ключ | Значение |
+|------|----------|
+| `DATABASE_URL` | строка из Neon |
+| `RUN_DB_INIT` | `true` |
+
+4. Redeploy.
 
 ## Обновления
 
@@ -27,4 +44,8 @@
 git push
 ```
 
-Render пересоберёт сайт автоматически.
+Render пересоберёт сайт сам.
+
+## Свой домен (позже, платный только домен)
+
+Render → Settings → Custom Domains → CNAME на `*.onrender.com`.

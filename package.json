@@ -5,8 +5,10 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
     "init-db": "node server/init-db.js",
-    "init-db:pg": "node server/init-db-pg.js"
+    "init-db:pg": "node server/init-db-pg.js",
+    "test:smoke": "node scripts/smoke-test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

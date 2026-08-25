@@ -1,6 +1,7 @@
 FROM node:20-alpine
 WORKDIR /app
-RUN mkdir -p uploads database
+RUN mkdir -p uploads database \
+  && apk add --no-cache python3 make g++
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY . .

@@ -6,7 +6,7 @@
   <title>Панель сотрудника — МедКлиника на Гагарина</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=2.2">
   <link rel="icon" href="/assets/logo.png" type="image/png">
 </head>
 <body>
@@ -28,7 +28,7 @@
       <div class="admin-tabs" id="adminTabs">
         <button class="admin-tab admin-only active" data-tab="staff">Персонал</button>
         <button class="admin-tab admin-only" data-tab="accounts">Учётные записи</button>
-        <button class="admin-tab active doctor-only" data-tab="calendar" style="display:none;">Календарь</button>
+        <button class="admin-tab doctor-only" data-tab="calendar" style="display:none;">Календарь</button>
         <button class="admin-tab doctor-only" data-tab="appointments-list" style="display:none;">Список записей</button>
         <button class="admin-tab admin-only" data-tab="appointments">Записи</button>
         <button class="admin-tab admin-only" data-tab="integrations">МедЛок</button>
@@ -37,9 +37,10 @@
       <!-- Staff panel (admin only) -->
       <div class="admin-panel admin-only active" id="panel-staff">
         <div class="admin-form">
-          <div class="admin-form__title" id="staffFormTitle">Добавить сотрудника</div>
+          <div class="admin-form__title" id="staffFormTitle">Добавить врача</div>
           <form id="staffForm">
             <input type="hidden" id="staffId">
+            <input type="hidden" id="sPosition" value="врач">
             <div class="form-row">
               <div class="form-group">
                 <label>Фамилия *</label>
@@ -62,16 +63,12 @@
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Должность</label>
-                <select id="sPosition">
-                  <option value="врач">Врач</option>
-                  <option value="медсестра">Медсестра</option>
-                  <option value="администратор">Администратор</option>
-                </select>
-              </div>
-              <div class="form-group">
                 <label>Категория</label>
                 <input type="text" id="sQualification" placeholder="высшая категория">
+              </div>
+              <div class="form-group">
+                <label>Фотография (ссылка)</label>
+                <input type="url" id="sPhotoUrl" placeholder="https://...">
               </div>
             </div>
             <div class="form-row">
@@ -92,11 +89,46 @@
               <label>Описание</label>
               <textarea id="sDescription"></textarea>
             </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Телефон врача</label>
+                <input type="tel" id="sPhone" placeholder="+7 (___) ___-__-__">
+              </div>
+              <div class="form-group">
+                <label>Контактный email</label>
+                <input type="email" id="sEmail" placeholder="doctor@clinic.ru">
+              </div>
+            </div>
+            <div class="admin-form__subtitle">Данные для входа врача</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Логин *</label>
+                <input type="text" id="sAccountLogin" required autocomplete="off"
+                       placeholder="doctor.ivanov">
+              </div>
+              <div class="form-group">
+                <label>Пароль <span id="passwordRequiredMark">*</span></label>
+                <input type="text" id="sAccountPassword" minlength="8" required autocomplete="off"
+                       placeholder="Не менее 8 символов">
+                <small class="form-hint" id="passwordHint">Передайте логин и пароль врачу безопасным способом.</small>
+              </div>
+            </div>
+            <button type="button" class="btn btn--outline btn--sm" id="generateCredentials">
+              Сгенерировать логин и пароль
+            </button>
             <div style="display:flex;gap:12px;">
               <button type="submit" class="btn btn--primary">Сохранить</button>
               <button type="button" class="btn btn--outline" id="staffCancel" style="display:none;">Отмена</button>
             </div>
           </form>
+          <div class="credentials-result" id="credentialsResult" hidden>
+            <strong>Врач создан. Сохраните данные для входа:</strong>
+            <div>Логин: <code id="createdLogin"></code></div>
+            <div>Пароль: <code id="createdPassword"></code></div>
+            <button type="button" class="btn btn--outline btn--sm" id="copyCredentials">
+              Скопировать
+            </button>
+          </div>
         </div>
 
         <div class="table-wrap">
@@ -105,7 +137,7 @@
               <tr>
                 <th>ФИО</th>
                 <th>Специальность</th>
-                <th>Должность</th>
+                <th>Логин</th>
                 <th>Стаж</th>
                 <th>Расписание</th>
                 <th>Статус</th>
@@ -178,7 +210,7 @@
       </div>
 
       <!-- Doctor calendar -->
-      <div class="admin-panel doctor-only active" id="panel-calendar" style="display:none;">
+      <div class="admin-panel doctor-only" id="panel-calendar" style="display:none;">
         <div class="calendar-toolbar">
           <div class="calendar-toolbar__nav">
             <button type="button" class="btn btn--outline btn--sm" id="calPrev">←</button>
@@ -280,19 +312,41 @@
     </div>
   </div>
 
-  <script src="/js/doctor.js"></script>
-  <script src="/js/integrations-admin.js"></script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/js/api-client.js?v=2.2"></script>
+  <script src="/js/doctor.js?v=2.2"></script>
+  <script src="/js/integrations-admin.js?v=2.2"></script>
   <script>
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const user = apiClient.getCurrentUser();
     const isAdmin = user?.role === 'admin';
     const isDoctor = user?.role === 'doctor';
 
-    if (!user || (!isAdmin && !isDoctor)) {
-      window.location.href = '/login.html';
+    if (!apiClient.getToken() || !user || (!isAdmin && !isDoctor)) {
+      apiClient.redirectToLogin();
     } else {
       const roleLabel = isAdmin ? 'Администратор' : user.specialty || 'Врач';
       document.getElementById('adminName').textContent = `${user.last_name} ${user.first_name} · ${roleLabel}`;
     }
+
+    let toastTimer;
+    function showToast(message, type = 'error') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast toast--visible toast--${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.className = 'toast'; }, 4000);
+    }
+    window.showToast = showToast;
+
+    async function guard(action) {
+      try {
+        await action();
+      } catch (err) {
+        showToast(err.message);
+      }
+    }
+    window.guard = guard;
 
     if (isDoctor) {
       document.getElementById('panelTitle').textContent = 'Кабинет врача';
@@ -301,17 +355,15 @@
         if (el.classList.contains('admin-panel')) el.style.display = 'block';
         else el.style.display = '';
       });
+      document.querySelectorAll('.admin-tab, .admin-panel').forEach(el => el.classList.remove('active'));
+      document.querySelector('.admin-tab[data-tab="calendar"]').classList.add('active');
       document.getElementById('panel-calendar').classList.add('active');
       initDoctorPanel(user);
     }
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('user');
-      window.location.href = '/login.html';
-    });
+    document.getElementById('logoutBtn').addEventListener('click', () => apiClient.logout());
 
-    const statusMap = { pending: 'Ожидает', confirmed: 'Подтверждена', cancelled: 'Отменена', completed: 'Завершена' };
-    const syncStatusMap = { local: 'Локально', pending: '…', synced: '✓', failed: '✗' };
+    initPatientModal();
 
     document.querySelectorAll('.admin-tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -326,95 +378,153 @@
       });
     });
 
-    async function fetchJSON(url, options) {
-      const res = await fetch(url, options);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Ошибка');
-      return data;
-    }
-
     async function loadStaff() {
       if (!isAdmin) return;
       const staff = await fetchJSON('/api/staff?active=false');
-      document.getElementById('staffTable').innerHTML = staff.map(s => `
+      document.getElementById('staffTable').innerHTML = staff.length ? staff.map(s => `
         <tr>
-          <td>${s.last_name} ${s.first_name} ${s.middle_name || ''}</td>
-          <td>${s.specialty}</td>
-          <td>${s.position}</td>
+          <td>${escapeHtml(`${s.last_name} ${s.first_name} ${s.middle_name || ''}`.trim())}</td>
+          <td>${escapeHtml(s.specialty)}</td>
+          <td>${escapeHtml(s.account_login) || '—'}</td>
           <td>${s.experience_years || '—'}</td>
-          <td>${s.schedule || '—'}</td>
+          <td>${escapeHtml(s.schedule) || '—'}</td>
           <td><span class="badge ${s.is_active ? 'badge--green' : 'badge--red'}">${s.is_active ? 'Активен' : 'Неактивен'}</span></td>
           <td>
             <button class="btn btn--outline btn--sm" onclick="editStaff(${s.id})">Изм.</button>
             ${s.is_active ? `<button class="btn btn--outline btn--sm" onclick="deactivateStaff(${s.id})">Деакт.</button>` : ''}
           </td>
         </tr>
-      `).join('');
+      `).join('') : '<tr><td colspan="7" class="table-empty">Сотрудников пока нет</td></tr>';
 
       const select = document.getElementById('aStaffId');
       select.innerHTML = '<option value="">— не привязан —</option>' +
         staff.filter(s => s.is_active && s.position === 'врач').map(s =>
-          `<option value="${s.id}">${s.last_name} ${s.first_name} — ${s.specialty}</option>`
+          `<option value="${s.id}">${escapeHtml(`${s.last_name} ${s.first_name} — ${s.specialty}`)}</option>`
         ).join('');
     }
 
-    window.editStaff = async (id) => {
+    window.editStaff = (id) => guard(async () => {
       const s = await fetchJSON(`/api/staff/${id}`);
       document.getElementById('staffId').value = s.id;
       document.getElementById('sLastName').value = s.last_name;
       document.getElementById('sFirstName').value = s.first_name;
       document.getElementById('sMiddleName').value = s.middle_name || '';
       document.getElementById('sSpecialty').value = s.specialty;
-      document.getElementById('sPosition').value = s.position;
       document.getElementById('sQualification').value = s.qualification || '';
       document.getElementById('sExperience').value = s.experience_years || 0;
       document.getElementById('sSchedule').value = s.schedule || '';
       document.getElementById('sEducation').value = s.education || '';
       document.getElementById('sDescription').value = s.description || '';
-      document.getElementById('staffFormTitle').textContent = 'Редактировать сотрудника';
+      document.getElementById('sPhotoUrl').value = s.photo_url || '';
+      document.getElementById('sPhone').value = s.phone || '';
+      document.getElementById('sEmail').value = s.email || '';
+      document.getElementById('sAccountLogin').value = s.account_login || '';
+      document.getElementById('sAccountPassword').value = '';
+      document.getElementById('sAccountPassword').required = false;
+      document.getElementById('passwordRequiredMark').hidden = true;
+      document.getElementById('passwordHint').textContent =
+        'Оставьте пустым, чтобы сохранить текущий пароль.';
+      document.getElementById('staffFormTitle').textContent = 'Редактировать врача';
       document.getElementById('staffCancel').style.display = 'inline-flex';
-    };
-
-    window.deactivateStaff = async (id) => {
-      if (!confirm('Деактивировать сотрудника?')) return;
-      await fetchJSON(`/api/staff/${id}`, { method: 'DELETE' });
-      loadStaff();
-    };
-
-    document.getElementById('staffCancel')?.addEventListener('click', () => {
-      document.getElementById('staffForm').reset();
-      document.getElementById('staffId').value = '';
-      document.getElementById('staffFormTitle').textContent = 'Добавить сотрудника';
-      document.getElementById('staffCancel').style.display = 'none';
+      document.getElementById('staffForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    document.getElementById('staffForm')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('staffId').value;
-      const body = {
-        first_name: document.getElementById('sFirstName').value,
-        last_name: document.getElementById('sLastName').value,
-        middle_name: document.getElementById('sMiddleName').value,
-        specialty: document.getElementById('sSpecialty').value,
-        position: document.getElementById('sPosition').value,
-        qualification: document.getElementById('sQualification').value,
-        experience_years: parseInt(document.getElementById('sExperience').value) || 0,
-        schedule: document.getElementById('sSchedule').value,
-        education: document.getElementById('sEducation').value,
-        description: document.getElementById('sDescription').value,
-      };
+    window.deactivateStaff = (id) => guard(async () => {
+      if (!confirm('Деактивировать сотрудника?')) return;
+      await fetchJSON(`/api/staff/${id}`, { method: 'DELETE' });
+      showToast('Сотрудник деактивирован', 'success');
+      loadStaff();
+    });
 
-      if (id) {
-        await fetchJSON(`/api/staff/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      } else {
-        await fetchJSON('/api/staff', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      }
-
+    function resetStaffForm() {
       document.getElementById('staffForm').reset();
       document.getElementById('staffId').value = '';
-      document.getElementById('staffFormTitle').textContent = 'Добавить сотрудника';
+      document.getElementById('sPosition').value = 'врач';
+      document.getElementById('sAccountPassword').required = true;
+      document.getElementById('passwordRequiredMark').hidden = false;
+      document.getElementById('passwordHint').textContent =
+        'Передайте логин и пароль врачу безопасным способом.';
+      document.getElementById('staffFormTitle').textContent = 'Добавить врача';
       document.getElementById('staffCancel').style.display = 'none';
-      loadStaff();
+    }
+
+    document.getElementById('staffCancel')?.addEventListener('click', resetStaffForm);
+
+    function transliterate(value) {
+      const map = {
+        а:'a', б:'b', в:'v', г:'g', д:'d', е:'e', ё:'e', ж:'zh', з:'z', и:'i',
+        й:'y', к:'k', л:'l', м:'m', н:'n', о:'o', п:'p', р:'r', с:'s', т:'t',
+        у:'u', ф:'f', х:'h', ц:'ts', ч:'ch', ш:'sh', щ:'sch', ы:'y', э:'e',
+        ю:'yu', я:'ya', ь:'', ъ:''
+      };
+      return String(value || '').toLowerCase().split('')
+        .map(char => map[char] ?? char)
+        .join('')
+        .replace(/[^a-z0-9]+/g, '.')
+        .replace(/^\.+|\.+$/g, '');
+    }
+
+    function randomPassword() {
+      const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$';
+      const bytes = crypto.getRandomValues(new Uint32Array(12));
+      return Array.from(bytes, n => alphabet[n % alphabet.length]).join('');
+    }
+
+    document.getElementById('generateCredentials')?.addEventListener('click', () => {
+      const lastName = transliterate(document.getElementById('sLastName').value) || 'doctor';
+      const firstName = transliterate(document.getElementById('sFirstName').value);
+      const suffix = String(Date.now()).slice(-4);
+      document.getElementById('sAccountLogin').value =
+        `${lastName}${firstName ? `.${firstName[0]}` : ''}.${suffix}`;
+      document.getElementById('sAccountPassword').value = randomPassword();
+    });
+
+    document.getElementById('copyCredentials')?.addEventListener('click', () => guard(async () => {
+      const text = `Логин: ${document.getElementById('createdLogin').textContent}\n` +
+        `Пароль: ${document.getElementById('createdPassword').textContent}`;
+      await navigator.clipboard.writeText(text);
+      showToast('Данные для входа скопированы', 'success');
+    }));
+
+    document.getElementById('staffForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      guard(async () => {
+        const id = document.getElementById('staffId').value;
+        const body = {
+          first_name: document.getElementById('sFirstName').value.trim(),
+          last_name: document.getElementById('sLastName').value.trim(),
+          middle_name: document.getElementById('sMiddleName').value.trim(),
+          specialty: document.getElementById('sSpecialty').value.trim(),
+          position: document.getElementById('sPosition').value,
+          qualification: document.getElementById('sQualification').value.trim(),
+          experience_years: parseInt(document.getElementById('sExperience').value) || 0,
+          schedule: document.getElementById('sSchedule').value.trim(),
+          education: document.getElementById('sEducation').value.trim(),
+          description: document.getElementById('sDescription').value.trim(),
+          photo_url: document.getElementById('sPhotoUrl').value.trim(),
+          phone: document.getElementById('sPhone').value.trim(),
+          email: document.getElementById('sEmail').value.trim(),
+          account_login: document.getElementById('sAccountLogin').value.trim(),
+          account_password: document.getElementById('sAccountPassword').value,
+        };
+
+        const password = body.account_password;
+        const login = body.account_login;
+        await fetchJSON(id ? `/api/staff/${id}` : '/api/staff', {
+          method: id ? 'PUT' : 'POST',
+          body: JSON.stringify(body),
+        });
+
+        showToast(id ? 'Данные врача обновлены' : 'Врач добавлен', 'success');
+        if (!id) {
+          document.getElementById('createdLogin').textContent = login;
+          document.getElementById('createdPassword').textContent = password;
+          document.getElementById('credentialsResult').hidden = false;
+        }
+        resetStaffForm();
+        loadStaff();
+        loadAccounts();
+      });
     });
 
     async function loadAccounts() {
@@ -423,31 +533,33 @@
       const roleLabels = { admin: 'Администратор', doctor: 'Врач' };
       document.getElementById('accountsTable').innerHTML = accounts.map(a => `
         <tr>
-          <td>${a.last_name} ${a.first_name}</td>
-          <td>${a.email}</td>
-          <td><span class="badge badge--blue">${roleLabels[a.role] || a.role}</span></td>
-          <td>${a.staff_name || '—'}</td>
+          <td>${escapeHtml(`${a.last_name} ${a.first_name}`)}</td>
+          <td>${escapeHtml(a.email)}</td>
+          <td><span class="badge badge--blue">${roleLabels[a.role] || escapeHtml(a.role)}</span></td>
+          <td>${escapeHtml(a.staff_name) || '—'}</td>
           <td><span class="badge ${a.is_active ? 'badge--green' : 'badge--red'}">${a.is_active ? 'Активна' : 'Отключена'}</span></td>
         </tr>
       `).join('');
     }
 
-    document.getElementById('accountForm')?.addEventListener('submit', async (e) => {
+    document.getElementById('accountForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
-      await fetchJSON('/api/auth/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          first_name: document.getElementById('aFirstName').value,
-          last_name: document.getElementById('aLastName').value,
-          email: document.getElementById('aEmail').value,
-          password: document.getElementById('aPassword').value,
-          role: document.getElementById('aRole').value,
-          staff_id: document.getElementById('aStaffId').value || null,
-        }),
+      guard(async () => {
+        await fetchJSON('/api/auth/accounts', {
+          method: 'POST',
+          body: JSON.stringify({
+            first_name: document.getElementById('aFirstName').value.trim(),
+            last_name: document.getElementById('aLastName').value.trim(),
+            email: document.getElementById('aEmail').value.trim(),
+            password: document.getElementById('aPassword').value,
+            role: document.getElementById('aRole').value,
+            staff_id: document.getElementById('aStaffId').value || null,
+          }),
+        });
+        showToast('Учётная запись создана', 'success');
+        e.target.reset();
+        loadAccounts();
       });
-      e.target.reset();
-      loadAccounts();
     });
 
     async function loadAppointments() {
@@ -455,31 +567,33 @@
       const appts = await fetchJSON('/api/appointments');
 
       document.getElementById('appointmentsTable').innerHTML = appts.length ? appts.map(a => `
-        <tr class="clickable-row" onclick="openPatientCard(${a.id}, ${a.staff_id || 0})">
-          <td>${a.appointment_date}</td>
-          <td>${a.appointment_time.slice(0, 5)}</td>
-          <td>${a.patient_name}</td>
-          <td>${a.patient_phone}</td>
-          <td>${a.doctor_name || '—'}</td>
-          <td>${a.service_name || '—'}</td>
-          <td><span class="badge badge--blue">${statusMap[a.status] || a.status}</span></td>
-          <td><span class="badge ${a.sync_status === 'synced' ? 'badge--green' : a.sync_status === 'failed' ? 'badge--red' : 'badge--blue'}">${syncStatusMap[a.sync_status] || a.sync_status || '—'}</span></td>
-          <td onclick="event.stopPropagation()">
-            ${a.sync_status === 'failed' ? `<button class="btn btn--outline btn--sm" onclick="retrySync(${a.id})">↻</button>` : ''}
+        <tr class="clickable-row" data-appointment-id="${a.id}" data-staff-id="${a.staff_id || 0}">
+          <td>${escapeHtml(a.appointment_date)}</td>
+          <td>${escapeHtml(String(a.appointment_time).slice(0, 5))}</td>
+          <td>${escapeHtml(a.patient_name)}</td>
+          <td>${escapeHtml(a.patient_phone)}</td>
+          <td>${escapeHtml(a.doctor_name) || '—'}</td>
+          <td>${escapeHtml(a.service_name) || '—'}</td>
+          <td><span class="badge badge--blue">${STATUS_LABELS[a.status] || escapeHtml(a.status)}</span></td>
+          <td><span class="badge ${a.sync_status === 'synced' ? 'badge--green' : a.sync_status === 'failed' ? 'badge--red' : 'badge--blue'}">${SYNC_LABELS[a.sync_status] || '—'}</span></td>
+          <td data-no-card>
+            ${a.sync_status === 'failed' ? `<button class="btn btn--outline btn--sm" onclick="retrySync(${a.id})" title="Повторить синхронизацию">↻</button>` : ''}
           </td>
         </tr>
-      `).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Записей пока нет</td></tr>';
+      `).join('') : '<tr><td colspan="9" class="table-empty">Записей пока нет</td></tr>';
     }
+    window.loadAppointments = loadAppointments;
 
-    window.retrySync = async (id) => {
+    window.retrySync = (id) => guard(async () => {
       await fetchJSON(`/api/integrations/medflex/sync/${id}`, { method: 'POST' });
+      showToast('Синхронизация выполнена', 'success');
       loadAppointments();
-    };
+    });
 
     if (isAdmin) {
-      loadStaff();
-      loadAccounts();
-      loadAppointments();
+      guard(loadStaff);
+      guard(loadAccounts);
+      guard(loadAppointments);
     }
   </script>
 </body>

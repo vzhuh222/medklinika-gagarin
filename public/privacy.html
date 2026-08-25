@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Политика конфиденциальности — МедКлиника на Гагарина</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=2.2">
+  <link rel="icon" href="/assets/logo.png" type="image/png">
+  <meta name="robots" content="noindex">
 </head>
 <body>
   <div class="admin-page" style="padding-top:40px;">
@@ -39,6 +41,9 @@
         <p>Вы вправе запросить доступ, исправление или удаление персональных данных, направив обращение на ${p.dpoEmail}.</p>
         <p style="margin-top:32px;font-size:13px;">Версия согласия: ${p.consentVersion}</p>
       `;
+    }).catch(() => {
+      document.getElementById('privacyContent').textContent =
+        'Не удалось загрузить политику. Обновите страницу или свяжитесь с клиникой по телефону.';
     });
   </script>
 </body>
