@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const DB_PATH = path.join(__dirname, '..', 'database', 'medklinika.db');
 const SCHEMA_PATH = path.join(__dirname, '..', 'database', 'schema.sql');
 const SEED_PATH = path.join(__dirname, '..', 'database', 'seed.sql');
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 const VERSION_FILE = path.join(__dirname, '..', 'database', '.schema_version');
 
 function initDatabase() {

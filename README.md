@@ -41,9 +41,13 @@ npm start
 | Роль | Email | Пароль |
 |------|-------|--------|
 | Админ | admin@medklinika.ru | admin123 |
+| Гинеколог-эндокринолог | n.chekeneva@medklinika.ru | Gagarin-Chekeneva |
+| Гинеколог | y.kirillova@medklinika.ru | Gagarin-Kirillova |
+| Кардиолог | l.zaharova@medklinika.ru | Gagarin-Zaharova |
+| Уролог | a.tokarev@medklinika.ru | Gagarin-Tokarev |
+| Хирург | a.chervyakov@medklinika.ru | Gagarin-Chervyakov |
 
-Врачи и их данные для входа создаются администратором на вкладке «Персонал».
-Пароль администратора демонстрационный — смените его перед передачей клиенту.
+Пароли демонстрационные — смените их перед передачей клиенту.
 
 ## Возможности
 
