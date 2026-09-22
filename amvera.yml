@@ -1,0 +1,8 @@
+# Российский хостинг Amvera (Москва) — сайт открывается без VPN.
+meta:
+  environment: docker
+  toolchain:
+    name: docker
+run:
+  containerPort: 8000
+  persistenceMount: /data

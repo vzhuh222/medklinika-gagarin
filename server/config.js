@@ -3,7 +3,7 @@ require('dotenv').config();
 module.exports = {
   port: parseInt(process.env.PORT || '3000', 10),
   databaseUrl: process.env.DATABASE_URL || '',
-  siteUrl: process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000',
+  siteUrl: process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || (process.env.NODE_ENV === 'production' ? 'https://medclinika-gagarin.ru' : 'http://localhost:3000'),
   corsOrigin: process.env.CORS_ORIGIN || (process.env.NODE_ENV === 'production' ? false : true),
 
   yandexMapsApiKey: process.env.YANDEX_MAPS_API_KEY || '',

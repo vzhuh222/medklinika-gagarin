@@ -8,6 +8,10 @@ COPY . .
 RUN chmod +x scripts/start-production.sh
 ENV NODE_ENV=production
 ENV PORT=8000
+ENV DATA_DIR=/data
+ENV SQLITE_PATH=/data/medklinika.db
+ENV UPLOAD_DIR=/data/uploads
+RUN mkdir -p /data /data/uploads
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||8000)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"

@@ -3,11 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const DB_PATH = path.join(__dirname, '..', 'database', 'medklinika.db');
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'database');
+const DB_PATH = process.env.SQLITE_PATH || path.join(DATA_DIR, 'medklinika.db');
 const SCHEMA_PATH = path.join(__dirname, '..', 'database', 'schema.sql');
 const SEED_PATH = path.join(__dirname, '..', 'database', 'seed.sql');
 const SCHEMA_VERSION = 6;
-const VERSION_FILE = path.join(__dirname, '..', 'database', '.schema_version');
+const VERSION_FILE = path.join(path.dirname(DB_PATH), '.schema_version');
 
 function initDatabase() {
   const dbDir = path.dirname(DB_PATH);
