@@ -10,6 +10,12 @@ const recordTypeMap = {
 
 let calendarStart = startOfWeek(new Date());
 let selectedCalendarDate = null;
+let calendarStaffId = null;
+let calendarListenersBound = false;
+
+function staffIdForCalendar() {
+  return calendarStaffId;
+}
 
 function notify(message, type = 'error') {
   if (typeof showToast === 'function') showToast(message, type);
@@ -45,22 +51,22 @@ function addDays(date, n) {
   return d;
 }
 
-function initDoctorPanel(user) {
-  if (!user?.staff_id) {
-    notify('Учётная запись не привязана к врачу — обратитесь к администратору');
-    return;
-  }
+function bindCalendarListeners() {
+  if (calendarListenersBound) return;
+  calendarListenersBound = true;
 
   document.getElementById('generateSlotsForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     run(async () => {
+      const staffId = staffIdForCalendar();
       const date = document.getElementById('genDate').value;
+      if (!staffId) throw new Error('Выберите врача');
       if (!date) return;
 
       const result = await fetchJSON('/api/slots/generate', {
         method: 'POST',
         body: JSON.stringify({
-          staff_id: user.staff_id,
+          staff_id: staffId,
           date,
           start_time: document.getElementById('genStart').value,
           end_time: document.getElementById('genEnd').value,
@@ -73,35 +79,74 @@ function initDoctorPanel(user) {
         `Создано окон: ${result.created}${skipped > 0 ? ` (${skipped} уже существовали)` : ''}`,
         'success',
       );
-      if (selectedCalendarDate === date) loadDaySlots(user.staff_id, date);
-      loadCalendar(user.staff_id);
+      if (selectedCalendarDate === date) await loadDaySlots(staffId, date);
+      await loadCalendar(staffId);
     });
   });
 
   document.getElementById('calPrev')?.addEventListener('click', () => {
     calendarStart = addDays(calendarStart, -7);
-    run(() => loadCalendar(user.staff_id));
+    run(() => loadCalendar(staffIdForCalendar()));
   });
 
   document.getElementById('calNext')?.addEventListener('click', () => {
     calendarStart = addDays(calendarStart, 7);
-    run(() => loadCalendar(user.staff_id));
+    run(() => loadCalendar(staffIdForCalendar()));
   });
+
+  document.getElementById('calStaffSelect')?.addEventListener('change', (e) => {
+    calendarStaffId = Number(e.target.value) || null;
+    run(async () => {
+      if (!calendarStaffId) return;
+      await loadCalendar(calendarStaffId);
+      if (selectedCalendarDate) await loadDaySlots(calendarStaffId, selectedCalendarDate);
+    });
+  });
+}
+
+function initDoctorPanel(user) {
+  bindCalendarListeners();
 
   const today = formatDateISO(new Date());
   document.getElementById('genDate').value = today;
   document.getElementById('genDate').min = today;
   selectedCalendarDate = today;
 
-  run(() => loadCalendar(user.staff_id));
-  run(() => loadDaySlots(user.staff_id, today));
-  run(() => loadDoctorAppointmentsList(user.staff_id));
+  run(async () => {
+    const staffWrap = document.getElementById('calStaffWrap');
+    const staffSelect = document.getElementById('calStaffSelect');
+    const isAdmin = user?.role === 'admin';
+
+    if (isAdmin) {
+      const staff = await fetchJSON('/api/staff');
+      const doctors = staff.filter((s) => s.position === 'врач' && s.is_active);
+      if (!doctors.length) {
+        if (staffWrap) staffWrap.hidden = true;
+        throw new Error('Нет активных врачей для расписания');
+      }
+      if (staffWrap) staffWrap.hidden = false;
+      staffSelect.innerHTML = doctors.map((d) => `
+        <option value="${d.id}">${escapeHtml(`${d.last_name} ${d.first_name}`.trim())} — ${escapeHtml(d.specialty)}</option>
+      `).join('');
+      calendarStaffId = Number(staffSelect.value);
+    } else {
+      if (staffWrap) staffWrap.hidden = true;
+      if (!user?.staff_id) {
+        throw new Error('Учётная запись не привязана к врачу — обратитесь к администратору');
+      }
+      calendarStaffId = user.staff_id;
+    }
+
+    await loadCalendar(calendarStaffId);
+    await loadDaySlots(calendarStaffId, today);
+    if (!isAdmin) await loadDoctorAppointmentsList(calendarStaffId);
+  });
 }
 
 async function loadCalendar(staffId) {
   const grid = document.getElementById('calendarGrid');
   const label = document.getElementById('calendarLabel');
-  if (!grid) return;
+  if (!grid || !staffId) return;
 
   const from = formatDateISO(calendarStart);
   const endDate = addDays(calendarStart, 6);

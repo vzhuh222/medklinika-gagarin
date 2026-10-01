@@ -30,6 +30,9 @@ async function bootstrap() {
     initDatabase();
   }
 
+  const { applyStaffRosterUpdates } = require('./data-cleanup');
+  await applyStaffRosterUpdates();
+
   const app = express();
   app.set('trust proxy', 1);
   app.disable('x-powered-by');

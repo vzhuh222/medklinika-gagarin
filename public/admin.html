@@ -6,7 +6,7 @@
   <title>Панель сотрудника — МедКлиника на Гагарина</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css?v=2.2">
+  <link rel="stylesheet" href="/css/style.css?v=2.3">
   <link rel="icon" href="/assets/logo.png" type="image/png">
 </head>
 <body>
@@ -28,7 +28,7 @@
       <div class="admin-tabs" id="adminTabs">
         <button class="admin-tab admin-only active" data-tab="staff">Персонал</button>
         <button class="admin-tab admin-only" data-tab="accounts">Учётные записи</button>
-        <button class="admin-tab doctor-only" data-tab="calendar" style="display:none;">Календарь</button>
+        <button class="admin-tab" data-tab="calendar" id="calendarTab">Календарь</button>
         <button class="admin-tab doctor-only" data-tab="appointments-list" style="display:none;">Список записей</button>
         <button class="admin-tab admin-only" data-tab="appointments">Записи</button>
         <button class="admin-tab admin-only" data-tab="integrations">МедЛок</button>
@@ -209,9 +209,13 @@
         </div>
       </div>
 
-      <!-- Doctor calendar -->
-      <div class="admin-panel doctor-only" id="panel-calendar" style="display:none;">
+      <!-- Calendar: doctor sees own schedule, admin picks a doctor -->
+      <div class="admin-panel" id="panel-calendar">
         <div class="calendar-toolbar">
+          <div class="form-group calendar-toolbar__doctor" id="calStaffWrap" hidden>
+            <label for="calStaffSelect">Врач</label>
+            <select id="calStaffSelect"></select>
+          </div>
           <div class="calendar-toolbar__nav">
             <button type="button" class="btn btn--outline btn--sm" id="calPrev">←</button>
             <strong id="calendarLabel"></strong>
@@ -314,9 +318,9 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="/js/api-client.js?v=2.2"></script>
-  <script src="/js/doctor.js?v=2.2"></script>
-  <script src="/js/integrations-admin.js?v=2.2"></script>
+  <script src="/js/api-client.js?v=2.3"></script>
+  <script src="/js/doctor.js?v=2.3"></script>
+  <script src="/js/integrations-admin.js?v=2.3"></script>
   <script>
     const user = apiClient.getCurrentUser();
     const isAdmin = user?.role === 'admin';
@@ -356,8 +360,11 @@
         else el.style.display = '';
       });
       document.querySelectorAll('.admin-tab, .admin-panel').forEach(el => el.classList.remove('active'));
-      document.querySelector('.admin-tab[data-tab="calendar"]').classList.add('active');
+      document.getElementById('calendarTab').classList.add('active');
       document.getElementById('panel-calendar').classList.add('active');
+    }
+
+    if (isAdmin || isDoctor) {
       initDoctorPanel(user);
     }
 

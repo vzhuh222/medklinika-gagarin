@@ -918,10 +918,19 @@ tr:hover td { background: var(--bg-alt); }
 /* Doctor calendar */
 .calendar-toolbar {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-end;
+  gap: 16px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+}
+
+.calendar-toolbar__doctor {
+  min-width: 260px;
+  margin-bottom: 0;
+}
+
+.calendar-toolbar__doctor select {
+  min-width: 240px;
 }
 
 .calendar-toolbar__nav {
